@@ -1,21 +1,28 @@
 from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse
+import os
+from random import randint
+import uuid
 
 app = FastAPI()
+IMAGEDIR = "./photos/"
 
-# Lista para almacenar imágenes en memoria
-imagenes_en_memoria = []
+# Welcome message 
+@app.get("/")
+async def home():
+    return {
+        "message": "Welcome to Face_Detection API"
+    }
 
-# Ruta para cargar una imagen y almacenarla en memoria
-@app.post("/uploadimage/")
-async def upload_image(file: UploadFile):
-    # Lee el contenido de la imagen y guárdalo en la lista de imágenes en memoria
-    imagen = await file.read()
-    imagenes_en_memoria.append(imagen)
-    
-    # Devuelve una respuesta indicando que la imagen se ha almacenado en memoria
-    return {"mensaje": "Imagen almacenada en memoria"}
+# Upload Images
+@app.post("/upload/")
+async def create_upload_file(file: UploadFile = File(...)):
 
-# Ruta para obtener una lista de todas las imágenes en memoria
-@app.get("/getimages/")
-async def get_images():
-    return imagenes_en_memoria
+    file.filename = f"{uuid.uuid4()}.jpg"
+    contents = await file.read()
+
+    #save the file
+    with open(f"{IMAGEDIR}{file.filename}", "wb") as f:
+        f.write(contents)
+
+    return {"filename": file.filename}
