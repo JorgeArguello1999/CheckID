@@ -1,6 +1,10 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 import uuid
+import os
+
+# Import face_detection
+import face_detection
 
 app = FastAPI()
 IMAGEDIR = "./photos/"
@@ -13,19 +17,6 @@ async def home():
     }
 
 # Upload Images
-"""
-@app.post("/upload/")
-async def create_upload_file(file: UploadFile = File(...)):
-
-    file.filename = f"{uuid.uuid4()}.jpg"
-    contents = await file.read()
-
-    #save the file
-    with open(f"{IMAGEDIR}{file.filename}", "wb") as f:
-        f.write(contents)
-
-    return {"filename": file.filename}
-"""
 @app.post("/upload/")
 async def create_upload_files(files: list[UploadFile] = File(...)):
     uploaded_files = []
@@ -38,7 +29,17 @@ async def create_upload_files(files: list[UploadFile] = File(...)):
         with open(f"{IMAGEDIR}/{file.filename}", "wb") as f:
             f.write(contents)
 
-        uploaded_files.append({"filename": file.filename})
+        uploaded_files.append(file.filename)
 
-    return JSONResponse(content=uploaded_files, media_type="application/json")
+    answer = face_detection.face_compare(
+        IMAGEDIR + uploaded_files[0], 
+        IMAGEDIR + uploaded_files[1]
+    )
 
+    for images in uploaded_files:
+        os.remove(IMAGEDIR + images)
+
+    return {
+        "euclidean distance": answer["distance"],
+        "answer": answer["answer"]
+    }
