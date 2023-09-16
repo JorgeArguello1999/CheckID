@@ -19,8 +19,10 @@ def face_compare(ruta_1, ruta_2):
     umbral = 0.5
 
     if distancia < umbral:
+        print("Similares")
         return True
     else:
+        print("No similares")
         return False
 
 if __name__ == "__main__":
