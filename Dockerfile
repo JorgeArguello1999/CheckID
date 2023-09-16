@@ -18,4 +18,3 @@ EXPOSE 8000
 
 # Inicie la aplicación FastAPI cuando se ejecute el contenedor
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
