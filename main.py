@@ -19,7 +19,26 @@ class ImageData(BaseModel):
 @app.get("/")
 async def home():
     return {
-        "message": "Welcome to Face_Detection API"
+        "message": "Welcome to Face_Detection API",
+        "author": "Jorge Arguello al3x_argu",
+    }
+
+@app.get("/upload/")
+async def help():
+    return {
+        "message": "Welcome to the face detection API",
+        "manual": {
+            "method": "To use this API, make a POST request with JSON formatted as follows",
+            "format": {
+                "image1": "image_in_base64", 
+                "image2": "image_in_base64"
+            }
+        },
+        "answer": "The response will contain two keys",
+        "response format": {
+            "euclidean_distance": "This value indicates the similarity between the two faces. When the distance is greater than 0.5, the faces are not the same. A distance less than 0.5 indicates similarity",
+            "answer": "True or False"
+        }
     }
 
 # Endpoint para cargar y comparar imágenes en formato JSON
@@ -51,7 +70,7 @@ async def create_upload_files(images: ImageData):
         os.remove(os.path.join(IMAGEDIR, filename2))
 
         return {
-            "euclidean distance": answer["distance"],
+            "euclidean_distance": answer["distance"],
             "answer": answer["answer"]
         }
 
