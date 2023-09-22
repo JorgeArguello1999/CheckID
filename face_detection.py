@@ -1,4 +1,5 @@
 import face_recognition
+import argparse
 
 def face_compare(ruta_1, ruta_2):
     # Cargar las dos imágenes de rostros que deseas comparar
@@ -32,8 +33,11 @@ def face_compare(ruta_1, ruta_2):
         }
 
 if __name__ == "__main__":
-    rutas = [
-        input("Ingresa la ruta de la primera imagen: "),
-        input("Ingresa la ruta de la segunda imagen: ")
-    ]
-    face_compare(rutas[0], rutas[1])
+    parser = argparse.ArgumentParser(description="Comparar rostros en dos imágenes.")
+
+    parser.add_argument("ruta_1", help="Ruta de la primera imagen.")
+    parser.add_argument("ruta_2", help="Ruta de la segunda imagen.")
+
+    args = parser.parse_args()
+
+    face_compare(args.ruta_1, args.ruta_2)
