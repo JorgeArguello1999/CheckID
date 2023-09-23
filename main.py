@@ -46,10 +46,7 @@ async def create_upload_files(images: ImageData):
         filename = google_storage.save(images)
 
         # Realizar la comparación de caras
-        answer = face_detection.face_compare(
-            filename[0],
-            filename[1]
-        )
+        answer = face_detection.face_compare(images.image1, images.image2)
 
         # Enviando respuesta
         return {
