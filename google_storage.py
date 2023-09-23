@@ -25,4 +25,4 @@ def save(images):
         os.path.join(IMAGEDIR, filename2)
     ]
 
-    return filename 
+    return [filename1, filename2] 

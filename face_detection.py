@@ -37,21 +37,18 @@ def face_compare(image1, image2):
     umbral = 0.5
 
     if distancia < umbral:
-        return {
-            "distance": distancia,
-            "answer": True
-        }
-
+        answer = True
     else:
-        return {
-            "distance": distancia,
-            "answer": False
-        }
+        answer = False
+    
+    return {
+        "distancia": distancia,
+        "answer": answer
+    }
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Comparar rostros en dos imágenes.")
     parser.add_argument("ruta_1", help="Ruta de la primera imagen.")
     parser.add_argument("ruta_2", help="Ruta de la segunda imagen.")
     args = parser.parse_args()
-
     face_compare(args.ruta_1, args.ruta_2)

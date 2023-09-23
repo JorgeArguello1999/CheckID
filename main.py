@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import face_detection
 import google_storage
 
+# Start FastAPI
 app = FastAPI()
 
 # Modelo para recibir el JSON con las imágenes codificadas en base64
@@ -42,17 +43,15 @@ async def help():
 @app.post("/upload/")
 async def create_upload_files(images: ImageData):
     try:
+        # Comparando las imagenes 
+        result = face_detection.face_compare(images.image1, images.image2)
+        result["save_on_google"] = False 
+
         # Guardando las imagenes en el google cloud
-        filename = google_storage.save(images)
+        if result["answer"] == True:
+            result["save_on_google"] = google_storage.save(images)
 
-        # Realizar la comparación de caras
-        answer = face_detection.face_compare(images.image1, images.image2)
-
-        # Enviando respuesta
-        return {
-            "euclidean_distance": answer["distance"],
-            "answer": answer["answer"]
-        }
+        return result
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
