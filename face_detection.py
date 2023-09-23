@@ -51,4 +51,5 @@ if __name__ == "__main__":
     parser.add_argument("ruta_1", help="Ruta de la primera imagen.")
     parser.add_argument("ruta_2", help="Ruta de la segunda imagen.")
     args = parser.parse_args()
+
     face_compare(args.ruta_1, args.ruta_2)
