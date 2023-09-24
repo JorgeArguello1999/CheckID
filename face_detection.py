@@ -7,7 +7,6 @@ from io import BytesIO
 from PIL import Image
 import base64
 import numpy as np 
-import time
 
 def base64_to_numpy(image):
     # Transformamos de base64 a numpy array
