@@ -30,7 +30,6 @@ def face_compare(image1, image2):
     :image1
     :image2
     """
-    """
     try:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Lanza las tareas de codificación en paralelo
@@ -50,6 +49,7 @@ def face_compare(image1, image2):
     codificacion1 = encode_image(image1)
     codificacion2 = encode_image(image2)
     print("Error:    No se ha podido usar Hilos")
+    """
 
     # Calcular la distancia euclidiana entre las codificaciones
     distancia = face_recognition.face_distance([codificacion1], codificacion2)[0]
