@@ -4,6 +4,7 @@ from pydantic import BaseModel
 # Modules
 import face_detection
 import google_storage
+import time
 
 # Start FastAPI
 app = FastAPI()
@@ -43,13 +44,17 @@ async def help():
 @app.post("/upload/")
 async def create_upload_files(images: ImageData):
     try:
+        time_start = time.time()
         # Comparando las imagenes 
         result = face_detection.face_compare(images.image1, images.image2)
+        result["save_on_google"] = False
 
         # Guardando las imagenes en el google cloud
         if result["answer"] == True:
             result["save_on_google"] = google_storage.save(images)
         
+        time_end = time.time()
+        print(f"Total time: {(time_end - time_start)}")
         return result
 
     except Exception as e:
