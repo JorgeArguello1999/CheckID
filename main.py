@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# Import face_detection
+# Modules
 import face_detection
 import google_storage
+
+# Python OS utils
+import time
 
 # Start FastAPI
 app = FastAPI()
@@ -43,15 +46,21 @@ async def help():
 @app.post("/upload/")
 async def create_upload_files(images: ImageData):
     try:
+        time_start = time.time()
         # Comparando las imagenes 
         result = face_detection.face_compare(images.image1, images.image2)
-        result["save_on_google"] = False 
 
         # Guardando las imagenes en el google cloud
         if result["answer"] == True:
             result["save_on_google"] = google_storage.save(images)
+        
+        time_end = time.time()
+        print(f"El tiempo es: {(time_end - time_start)}")
 
         return result
 
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        # raise HTTPException(status_code=400, detail=str(e))
+        return {
+            "error as ocurred"
+        }

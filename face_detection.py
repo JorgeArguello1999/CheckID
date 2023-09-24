@@ -1,11 +1,13 @@
 import face_recognition
 import argparse
+import concurrent.futures
 
 # Python Modules
 from io import BytesIO
 from PIL import Image
 import base64
 import numpy as np 
+import time
 
 def base64_to_numpy(image):
     # Transformamos de base64 a numpy array
@@ -18,16 +20,31 @@ def base64_to_numpy(image):
     image_array = np.array(image)
     return image_array
 
+def encode_image(image):
+    return face_recognition.face_encodings(
+        base64_to_numpy(image)
+    )[0]
+
 def face_compare(image1, image2):
     """
-    Recibe código en Base64
+    Recibe imagenes en Base64
+    :image1
+    :image2
     """
-    imagen1 = base64_to_numpy(image1)
-    imagen2 = base64_to_numpy(image2)
+    try:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Lanza las tareas de codificación en paralelo
+            future1 = executor.submit(encode_image, image1)
+            future2 = executor.submit(encode_image, image2)
 
-    # Codificar los rostros en ambas imágenes
-    codificacion1 = face_recognition.face_encodings(imagen1)[0]  
-    codificacion2 = face_recognition.face_encodings(imagen2)[0]
+            # Espera a que ambas tareas de codificación se completen
+            codificacion1 = future1.result()
+            codificacion2 = future2.result()
+    except:
+        # Codificar los rostros en ambas imágenes
+        codificacion1 = encode_image(image1)
+        codificacion2 = encode_image(image2)
+        print("Error:    No se ha podido usar Hilos")
 
     # Calcular la distancia euclidiana entre las codificaciones
     distancia = face_recognition.face_distance([codificacion1], codificacion2)[0]
@@ -40,7 +57,7 @@ def face_compare(image1, image2):
         answer = True
     else:
         answer = False
-    
+
     return {
         "distancia": distancia,
         "answer": answer
