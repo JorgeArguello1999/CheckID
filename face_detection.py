@@ -1,6 +1,6 @@
 import face_recognition
 import argparse
-import concurrent.futures
+import threading
 
 # Python Modules
 from io import BytesIO
@@ -8,7 +8,10 @@ from PIL import Image
 import base64
 import numpy as np 
 
-def base64_to_numpy(image):
+# Aquí se almacenan las imagenes codificadas
+resultados = []
+
+def base64_to_numpy_and_encode(image):
     # Transformamos de base64 a numpy array
     image_bytes = base64.b64decode(image)
     # Crear un objeto BytesIO a partir de los bytes
@@ -17,46 +20,43 @@ def base64_to_numpy(image):
     image = Image.open(image_io)
     # Convertir la imagen a una matriz numpy
     image_array = np.array(image)
-    return image_array
+    salida = face_recognition.face_encodings(image_array)[0]
+    resultados.append(salida)
+    return salida
 
-def encode_image(image):
-    return face_recognition.face_encodings(
-        base64_to_numpy(image)
-    )[0]
-
-def face_compare(image1, image2):
+def face_compare(image1, image2, core=False):
     """
     Recibe imagenes en Base64
     :image1
     :image2
+    :Core -> Habilita o Inhabilita el uso de hilos (Beta)
     """
-    try:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            # Lanza las tareas de codificación en paralelo
-            future1 = executor.submit(encode_image, image1)
-            future2 = executor.submit(encode_image, image2)
+    if core == True:
+        hilo1 = threading.Thread(target=base64_to_numpy_and_encode, args=(image1, ))
+        hilo2 = threading.Thread(target=base64_to_numpy_and_encode, args=(image2, ))
 
-            # Espera a que ambas tareas de codificación se completen
-            codificacion1 = future1.result()
-            codificacion2 = future2.result()
-    except Exception as e:
+        hilo1.start()
+        hilo2.start()
+
+        hilo1.join()
+        hilo2.join()
+        print("Method:    Threads")
+
+    else: 
         # Codificar los rostros en ambas imágenes
-        codificacion1 = encode_image(image1)
-        codificacion2 = encode_image(image2)
-        print(f"Error:    {e}")
-    """
-    # Codificar los rostros en ambas imágenes
-    codificacion1 = encode_image(image1)
-    codificacion2 = encode_image(image2)
-    print("Error:    No se ha podido usar Hilos")
-    """
+        resultados[0] = base64_to_numpy_and_encode(image1)
+        resultados[1] = base64_to_numpy_and_encode(image2)
+        print("Method:    Lineal")
 
-    # Calcular la distancia euclidiana entre las codificaciones
-    distancia = face_recognition.face_distance([codificacion1], codificacion2)[0]
-
+    # No toques la face_distance porque en la documentación esta así y así
+    # lo dejamos :)
+    distancia = face_recognition.face_distance([resultados[0]], resultados[1])[0]
+ 
     # El valor de distancia es un valor entre 0 y 1, donde 0 indica una similitud perfecta
     # Puedes establecer un umbral para decidir si las imágenes son suficientemente similares
     umbral = 0.5
+
+    print(distancia)
 
     if distancia < umbral:
         answer = True
@@ -70,8 +70,8 @@ def face_compare(image1, image2):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Comparar rostros en dos imágenes.")
-    parser.add_argument("ruta_1", help="Ruta de la primera imagen.")
-    parser.add_argument("ruta_2", help="Ruta de la segunda imagen.")
+    parser.add_argument("codigo64_image", help="Codigo base64 de la primera imagen.")
+    parser.add_argument("codigo64_image", help="Código base64 de la primera imagen.")
     args = parser.parse_args()
 
     face_compare(args.ruta_1, args.ruta_2)
