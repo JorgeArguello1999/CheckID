@@ -1,17 +1,17 @@
 import face_recognition
 import argparse
 import threading
-
-# Python Modules
 from io import BytesIO
 from PIL import Image
 import base64
 import numpy as np 
+import concurrent.futures
 
 # Aquí se almacenan las imagenes codificadas
 resultados = []
+resultados_lock = threading.Lock()
 
-def base64_to_numpy_and_encode(image):
+def base64_to_numpy(image):
     # Transformamos de base64 a numpy array
     image_bytes = base64.b64decode(image)
     # Crear un objeto BytesIO a partir de los bytes
@@ -19,10 +19,16 @@ def base64_to_numpy_and_encode(image):
     # Abrir la imagen utilizando la biblioteca PIL (Pillow)
     image = Image.open(image_io)
     # Convertir la imagen a una matriz numpy
-    image_array = np.array(image)
-    salida = face_recognition.face_encodings(image_array)[0]
-    resultados.append(salida)
-    return salida
+    return np.array(image)
+
+def encode_image(image):
+    salida = face_recognition.face_encodings(
+        base64_to_numpy(image)
+    )[0]
+
+    with resultados_lock:
+        resultados.append(salida)
+    return salida 
 
 def face_compare(image1, image2, core=False):
     """
@@ -32,8 +38,8 @@ def face_compare(image1, image2, core=False):
     :Core -> Habilita o Inhabilita el uso de hilos (Beta)
     """
     if core == True:
-        hilo1 = threading.Thread(target=base64_to_numpy_and_encode, args=(image1, ))
-        hilo2 = threading.Thread(target=base64_to_numpy_and_encode, args=(image2, ))
+        hilo1 = threading.Thread(target=encode_image, args=(image1, ))
+        hilo2 = threading.Thread(target=encode_image, args=(image2, ))
 
         hilo1.start()
         hilo2.start()
@@ -41,11 +47,22 @@ def face_compare(image1, image2, core=False):
         hilo1.join()
         hilo2.join()
         print("Method:    Threads")
+        """
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            hilo1 = executor.submit(encode_image, image1)
+            hilo2 = executor.submit(encode_image, image2)
+            
+            resultado1 = hilo1.result()
+            resultado2 = hilo2.result()
+        print(resultado1)
+        print(resultado2)
+        print(resultados)
+        """
 
     else: 
         # Codificar los rostros en ambas imágenes
-        resultados[0] = base64_to_numpy_and_encode(image1)
-        resultados[1] = base64_to_numpy_and_encode(image2)
+        resultados[0] = encode_image(image1)
+        resultados[1] = encode_image(image2)
         print("Method:    Lineal")
 
     # No toques la face_distance porque en la documentación esta así y así
