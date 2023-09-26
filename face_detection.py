@@ -1,35 +1,45 @@
+from PIL import Image
+from io import BytesIO
 import face_recognition
 import argparse
 import threading
-from io import BytesIO
-from PIL import Image
 import base64
 import numpy as np 
 import concurrent.futures
 
 # Aquí se almacenan las imagenes codificadas
 resultados = []
+# Creamos un bloqueo
 resultados_lock = threading.Lock()
 
-def base64_to_numpy(image):
-    # Transformamos de base64 a numpy array
-    image_bytes = base64.b64decode(image)
-    # Crear un objeto BytesIO a partir de los bytes
-    image_io = BytesIO(image_bytes)
-    # Abrir la imagen utilizando la biblioteca PIL (Pillow)
-    image = Image.open(image_io)
-    # Convertir la imagen a una matriz numpy
-    return np.array(image)
-
-def encode_image(image):
-    salida = face_recognition.face_encodings(
-        base64_to_numpy(image)
-    )[0]
-
-    with resultados_lock:
+def base64_to_numpy(image, core=False):
+    if core == True:
+        resultados_lock.acquire()
+        # Transformamos de base64 a numpy array
+        image_bytes = base64.b64decode(image)
+        # Crear un objeto BytesIO a partir de los bytes
+        image_io = BytesIO(image_bytes)
+        # Abrir la imagen utilizando la biblioteca PIL (Pillow)
+        image = Image.open(image_io)
+        # Convertir la imagen a una matriz numpy
+        salida = face_recognition.face_encodings(
+            np.array(image)
+        )[0]
         resultados.append(salida)
-    return salida 
-
+        resultados_lock.release()
+    else:
+        # Transformamos de base64 a numpy array
+        image_bytes = base64.b64decode(image)
+        # Crear un objeto BytesIO a partir de los bytes
+        image_io = BytesIO(image_bytes)
+        # Abrir la imagen utilizando la biblioteca PIL (Pillow)
+        image = Image.open(image_io)
+        # Convertir la imagen a una matriz numpy
+        salida = face_recognition.face_encodings(
+            np.array(image)
+        )[0]
+        resultados.append(salida)
+ 
 def face_compare(image1, image2, core=False):
     """
     Recibe imagenes en Base64
@@ -38,8 +48,8 @@ def face_compare(image1, image2, core=False):
     :Core -> Habilita o Inhabilita el uso de hilos (Beta)
     """
     if core == True:
-        hilo1 = threading.Thread(target=encode_image, args=(image1, ))
-        hilo2 = threading.Thread(target=encode_image, args=(image2, ))
+        hilo1 = threading.Thread(target=base64_to_numpy, args=(image1, ))
+        hilo2 = threading.Thread(target=base64_to_numpy, args=(image2, ))
 
         hilo1.start()
         hilo2.start()
@@ -47,27 +57,19 @@ def face_compare(image1, image2, core=False):
         hilo1.join()
         hilo2.join()
         print("Method:    Threads")
-        """
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            hilo1 = executor.submit(encode_image, image1)
-            hilo2 = executor.submit(encode_image, image2)
-            
-            resultado1 = hilo1.result()
-            resultado2 = hilo2.result()
-        print(resultado1)
-        print(resultado2)
-        print(resultados)
-        """
 
     else: 
         # Codificar los rostros en ambas imágenes
-        resultados[0] = encode_image(image1)
-        resultados[1] = encode_image(image2)
+        resultados[0] = base64_to_numpy(image1)
+        resultados[1] = base64_to_numpy(image2)
         print("Method:    Lineal")
 
     # No toques la face_distance porque en la documentación esta así y así
     # lo dejamos :)
     distancia = face_recognition.face_distance([resultados[0]], resultados[1])[0]
+    print("Distance: ", distancia)
+    print(resultados[0])
+    print(resultados[1])
  
     # El valor de distancia es un valor entre 0 y 1, donde 0 indica una similitud perfecta
     # Puedes establecer un umbral para decidir si las imágenes son suficientemente similares
