@@ -4,7 +4,6 @@ from pydantic import BaseModel
 # Modules
 import face_detection
 import google_storage
-import test
 
 # Start FastAPI
 app = FastAPI()
