@@ -8,6 +8,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Instale las dependencias de Python
+RUN apt install tesseract-ocr -y
 RUN pip install -r requirements.txt
 
 # Copie todos los archivos de tu proyecto al directorio de trabajo

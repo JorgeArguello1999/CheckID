@@ -44,7 +44,12 @@ async def help():
 async def create_upload_files(images: ImageData):
     try:
         # Comparando las imagenes 
-        result = face_detection.face_compare(images.image1, images.image2, core=False)
+        cedula = "1600644353"
+        result = face_detection.face_compare(
+            images.image1, 
+            images.image2, 
+            cedula
+        )
         result["save_on_google"] = False
 
         # Guardando las imagenes en el google cloud
