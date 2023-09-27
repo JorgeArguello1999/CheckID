@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from fastapi import FastAPI, File, UploadFile, Form
+
 
 # Modules
 import face_detection
@@ -41,9 +42,10 @@ async def help():
 
 # Endpoint para cargar y comparar imágenes en formato JSON
 @app.post("/upload/")
-async def create_upload_files(images: ImageData):
+async def create_upload_files(images: ImageData, cedula:str=Form(...)):
     try:
         # Comparando las imagenes 
+        print(cedula)
         cedula = "1600644353"
         result = face_detection.face_compare(
             images.image1, 
