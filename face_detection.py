@@ -5,6 +5,7 @@ import argparse
 import base64
 import numpy as np 
 import pytesseract
+import re
 
 # Transformamos de base64 a numpy array
 def base64_to_numpy(image):
@@ -23,11 +24,13 @@ def base64_to_numpy(image):
 def get_text(image):
     try:
         texto_image = pytesseract.image_to_string(image)
-        return texto_image 
+        salida = re.findall(r'\d', texto_image)
+        return  ''.join(salida)
     except Exception as e:
        print(f"Error:    {e}")
        return False
     
+# Función principal
 def face_compare(image1, image2, cedula:str):
     """
     Recibe imagenes en Base64
@@ -58,6 +61,8 @@ def face_compare(image1, image2, cedula:str):
         ced = True
     else:
         ced = False
+        print("1era Foto:", codificacion1[1])
+        print("2da Foto:", codificacion2[1])
 
     return {
         "distancia": distancia,
@@ -69,6 +74,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Comparar rostros en dos imágenes.")
     parser.add_argument("codigo64_image_1", help="Codigo base64 de la primera imagen.")
     parser.add_argument("codigo64_image_2", help="Código base64 de la primera imagen.")
+    parser.add_argument("cedula", help="Número de cédula de la persona.")
     args = parser.parse_args()
 
     # Leer y codificar la primera imagen en base64
@@ -80,4 +86,4 @@ if __name__ == "__main__":
         imagen2_base64 = base64.b64encode(imagen2_file.read()).decode('utf-8')
 
 
-    face_compare(imagen1_base64, imagen2_base64)
+    face_compare(imagen1_base64, imagen2_base64, args.cedula)

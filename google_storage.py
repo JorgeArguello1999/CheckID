@@ -1,7 +1,9 @@
+from google.cloud import storage
 import os 
 import uuid
 import base64
 
+GCS_BUCKET_NAME = "url"
 IMAGEDIR = "./photos/"
 
 def save(images):
@@ -26,3 +28,30 @@ def save(images):
     ]
 
     return [filename1, filename2] 
+
+def save_google(images):
+    # Decodificar las imágenes en base64
+    image1_data = base64.b64decode(images.image1)
+    image2_data = base64.b64decode(images.image2)
+
+    # Generar nombres de archivo únicos
+    filename1 = f"{uuid.uuid4()}.jpg"
+    filename2 = f"{uuid.uuid4()}.jpg"
+
+    # Subir las imágenes a Google Cloud Storage
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(GCS_BUCKET_NAME)
+    
+    blob1 = bucket.blob(filename1)
+    blob2 = bucket.blob(filename2)
+    
+    blob1.upload_from_string(image1_data, content_type="image/jpeg")
+    blob2.upload_from_string(image2_data, content_type="image/jpeg")
+    
+    # Retornar las rutas de guardado en GCS
+    gcs_paths = [
+        f"gs://{GCS_BUCKET_NAME}/{filename1}",
+        f"gs://{GCS_BUCKET_NAME}/{filename2}"
+    ]
+
+    return gcs_paths
