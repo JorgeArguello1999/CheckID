@@ -12,12 +12,14 @@ def face_compare(image1, image2, cedula:str):
     :param image2
     """
     # Codificar los rostros en ambas imágenes
-    codificacion1 = base64_to_numpy(image1)
-    codificacion2 = base64_to_numpy(image2)
+    imagen1 = base64_to_numpy(image1)
+    imagen2 = base64_to_numpy(image2)
 
-    # No toques la face_distance porque en la documentación esta así y así
-    # lo dejamos :)
-    distancia = face_recognition.face_distance([codificacion1[0]], codificacion2[0])[0]
+    # Calculamos la distancia
+    distancia = face_recognition.face_distance(
+        [imagen1["image_encode"]], 
+        imagen2["image_encode"]
+    )[0]
  
     # El valor de distancia es un valor entre 0 y 1, donde 0 indica una similitud perfecta
     # Puedes establecer un umbral para decidir si las imágenes son suficientemente similares
@@ -28,18 +30,25 @@ def face_compare(image1, image2, cedula:str):
         answer = True
     else:
         answer = False
+    
+    # Validamos la cédula
+    ced = ced_compare(
+        cedula,
+        imagen1["image_text"],
+        imagen2["image_text"]
+    )
 
-    # Validamos cedulas
-    if cedula in codificacion1[1] or cedula in codificacion2[1]:
-        ced = True
+    if answer == True and ced == True:
+        answer = True
+    elif answer == True and ced == False:
+        answer = "Ced Problem"
+    elif answer == False and ced == True:
+        answer = "Face Problem"
     else:
-        ced = False
-        print("1era Foto:", codificacion1[1])
-        print("2da Foto:", codificacion2[1])
+        answer = False
 
     return {
-        "distancia": distancia,
-        "cedula": ced,
+        "distance": distancia,
         "answer": answer
     }
 
@@ -52,23 +61,31 @@ def base64_to_numpy(image):
     image = Image.open(image_io)
     # Convertir la imagen a una matriz numpy y encodear
     img_array = np.array(image)
-    return [
-        face_recognition.face_encodings(img_array)[0],
-        # get_text(img_array)
-        get_text(image)
-    ]
+    return {
+        "image_encode": face_recognition.face_encodings(img_array)[0],
+        "image_text": get_text(image)
+    }
 
 # Obtener texto de la imagen 
 def get_text(image):
     try:
-        # alinear_image = enderezar_imagen_con_texto(image)
-        # texto_image = pytesseract.image_to_string(alinear_image)
         texto_image = pytesseract.image_to_string(image)
         salida = re.findall(r'\d', texto_image)
         return  ''.join(salida)
     except Exception as e:
        print(f"Error:    {e}")
        return False
+
+# Comparar cédula
+def ced_compare(cedula:str, image1, image2):
+    print("1era Foto:", image1)
+    print("2da Foto:", image2)
+
+    if cedula in image1 or cedula in image2:
+        ced = True
+    else:
+        ced = False
+    return ced
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Comparar rostros en dos imágenes.")
