@@ -1,42 +1,15 @@
 from PIL import Image
+import face_recognition, pytesseract
 from io import BytesIO
-import face_recognition
-import argparse
-import base64
 import numpy as np 
-import pytesseract
-import re
+import argparse, base64, re
 
-# Transformamos de base64 a numpy array
-def base64_to_numpy(image):
-    image_bytes = base64.b64decode(image)
-    # Crear un objeto BytesIO a partir de los bytes
-    image_io = BytesIO(image_bytes)
-    # Abrir la imagen utilizando la biblioteca PIL (Pillow)
-    image = Image.open(image_io)
-    # Convertir la imagen a una matriz numpy y encodear
-    return [
-        face_recognition.face_encodings(np.array(image))[0],
-        get_text(image)
-    ]
-
-# Obtener texto de la imagen 
-def get_text(image):
-    try:
-        texto_image = pytesseract.image_to_string(image)
-        salida = re.findall(r'\d', texto_image)
-        return  ''.join(salida)
-    except Exception as e:
-       print(f"Error:    {e}")
-       return False
-    
 # Función principal
 def face_compare(image1, image2, cedula:str):
     """
     Recibe imagenes en Base64
-    :image1
-    :image2
-    :Core -> Habilita o Inhabilita el uso de hilos (Beta)
+    :param image1
+    :param image2
     """
     # Codificar los rostros en ambas imágenes
     codificacion1 = base64_to_numpy(image1)
@@ -69,6 +42,33 @@ def face_compare(image1, image2, cedula:str):
         "cedula": ced,
         "answer": answer
     }
+
+# Transformamos de base64 a numpy array
+def base64_to_numpy(image):
+    image_bytes = base64.b64decode(image)
+    # Crear un objeto BytesIO a partir de los bytes
+    image_io = BytesIO(image_bytes)
+    # Abrir la imagen utilizando la biblioteca PIL (Pillow)
+    image = Image.open(image_io)
+    # Convertir la imagen a una matriz numpy y encodear
+    img_array = np.array(image)
+    return [
+        face_recognition.face_encodings(img_array)[0],
+        # get_text(img_array)
+        get_text(image)
+    ]
+
+# Obtener texto de la imagen 
+def get_text(image):
+    try:
+        # alinear_image = enderezar_imagen_con_texto(image)
+        # texto_image = pytesseract.image_to_string(alinear_image)
+        texto_image = pytesseract.image_to_string(image)
+        salida = re.findall(r'\d', texto_image)
+        return  ''.join(salida)
+    except Exception as e:
+       print(f"Error:    {e}")
+       return False
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Comparar rostros en dos imágenes.")

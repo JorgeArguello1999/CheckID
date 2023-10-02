@@ -64,7 +64,6 @@ async def create_upload_files(data: ImageData):
         return result
 
     except Exception as e:
-        # raise HTTPException(status_code=400, detail=str(e))
         return {
             "error as ocurred"
         }
