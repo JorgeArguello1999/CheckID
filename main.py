@@ -58,7 +58,11 @@ async def create_upload_files(data: ImageData):
 
         # Guardando las imagenes en el google cloud
         if result["faces"] == True and result["cedula"] == True:
-            result["save_on_google"] = google_storage.save(data)
+            try:
+                result["save_on_google"] = google_storage.save_google(data)
+            except Exception as e:
+                result["save_on_google"] = google_storage.save(data)
+                print(f"Erro:   {e}")
         
         return result
 

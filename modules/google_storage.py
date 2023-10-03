@@ -3,7 +3,7 @@ from google.cloud import storage
 import uuid
 import base64
 
-GCS_BUCKET_NAME = "url"
+GCS_BUCKET_NAME = "imgvalidacion"
 IMAGEDIR = "./photos/"
 
 def save(images):
@@ -50,8 +50,8 @@ def save_google(images):
     
     # Retornar las rutas de guardado en GCS
     gcs_paths = [
-        f"gs://{GCS_BUCKET_NAME}/{filename1}",
-        f"gs://{GCS_BUCKET_NAME}/{filename2}"
+        f"{filename1}",
+        f"{filename2}"
     ]
 
     return gcs_paths
