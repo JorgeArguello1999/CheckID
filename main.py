@@ -37,8 +37,9 @@ async def help():
             }
         },
         "response format": {
-            "euclidean_distance": "This value indicates the similarity between the two faces. When the distance is greater than 0.5, the faces are not the same. A distance less than 0.5 indicates similarity",
-            "answer": "True, False, Ced Problem or Face Problem",
+            "distance": "This value indicates the similarity between the two faces. When the distance is greater than 0.5, the faces are not the same. A distance less than 0.5 indicates similarity",
+            "faces": "True or False",
+            "cedula": "True or False",
             "save_on_google": "False but is True returns a name the file on google bucket"
         }
     }

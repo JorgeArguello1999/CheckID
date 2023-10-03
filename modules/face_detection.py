@@ -27,9 +27,9 @@ def face_compare(image1, image2, cedula:str):
 
     # Validamos umbral
     if distancia < umbral:
-        answer = True
+        faces = True
     else:
-        answer = False
+        faces = False
     
     # Validamos la cédula
     ced = ced_compare(
@@ -38,18 +38,10 @@ def face_compare(image1, image2, cedula:str):
         imagen2["image_text"]
     )
 
-    if answer == True and ced == True:
-        answer = True
-    if answer == True and ced == False:
-        answer = "Ced Problem"
-    if answer == False and ced == True:
-        answer = "Face Problem"
-    else:
-        answer = False
-
     return {
         "distance": distancia,
-        "answer": answer
+        "faces": faces,
+        "cedula": ced 
     }
 
 # Transformamos de base64 a numpy array
