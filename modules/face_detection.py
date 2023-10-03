@@ -70,7 +70,6 @@ def base64_to_numpy(image):
 def get_text(image):
     try:
         texto_image = pytesseract.image_to_string(image)
-        print(texto_image)
         salida = re.findall(r'\d', texto_image)
         return  ''.join(salida)
     except Exception as e:
