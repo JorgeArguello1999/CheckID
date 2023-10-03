@@ -1,10 +1,9 @@
 from pydantic import BaseModel
 from fastapi import FastAPI, File, UploadFile, Form
 
-
 # Modules
-import face_detection
-import google_storage
+import modules.face_detection as face_detection
+import modules.google_storage as google_storage
 
 # Start FastAPI
 app = FastAPI()
@@ -64,5 +63,5 @@ async def create_upload_files(data: ImageData):
 
     except Exception as e:
         return {
-            "error as ocurred"
+            "error as ocurred": f"{e}"
         }

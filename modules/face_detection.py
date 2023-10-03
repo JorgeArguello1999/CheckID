@@ -40,9 +40,9 @@ def face_compare(image1, image2, cedula:str):
 
     if answer == True and ced == True:
         answer = True
-    elif answer == True and ced == False:
+    if answer == True and ced == False:
         answer = "Ced Problem"
-    elif answer == False and ced == True:
+    if answer == False and ced == True:
         answer = "Face Problem"
     else:
         answer = False
@@ -70,6 +70,7 @@ def base64_to_numpy(image):
 def get_text(image):
     try:
         texto_image = pytesseract.image_to_string(image)
+        print(texto_image)
         salida = re.findall(r'\d', texto_image)
         return  ''.join(salida)
     except Exception as e:
