@@ -43,7 +43,6 @@ def cedula_compare(cedula:str, img_text:str)-> bool:
 
     try:
         if cedula in salida:
-            print(f"Funciona: {salida}")
             return True 
     except Exception as e:
         print(f"No funciona: {e}")
