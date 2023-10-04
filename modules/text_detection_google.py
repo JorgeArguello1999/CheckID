@@ -19,29 +19,34 @@ def text_detection(credenciales_json:str, image, cedula:str, compare_or_text="co
     # Cargo la imagen en Base64
     contenido_imagen = base64.b64decode(image)
 
-    # Crear un objeto de imagen
-    imagen = vision.Image(content=contenido_imagen)
-    # Realizar la solicitud de detección de texto
-    resultado = cliente_vision.text_detection(image=imagen)
-    textos_detectados = resultado.text_annotations
-    # El primer elemento es el texto completo detectado en la imagen
-    texto_completo = textos_detectados[0].description
+    try:
+        # Crear un objeto de imagen
+        imagen = vision.Image(content=contenido_imagen)
+        # Realizar la solicitud de detección de texto
+        resultado = cliente_vision.text_detection(image=imagen)
+        textos_detectados = resultado.text_annotations
+        # El primer elemento es el texto completo detectado en la imagen
+        texto_completo = textos_detectados[0].description
 
-    if compare_or_text == "compare":
-        return cedula_compare(cedula, texto_completo)
-    if compare_or_text == "text":
-        return texto_completo
+        if compare_or_text == "compare":
+            return cedula_compare(cedula, texto_completo)
+        if compare_or_text == "text":
+            return texto_completo
+    
+    except Exception as e:
+        return False
 
 def cedula_compare(cedula:str, img_text:str)-> bool:
     # Filtramos la salida, conservamos solo números
     salida = re.findall(r'\d', img_text)
     salida = (''.join(salida))
 
-    if cedula in salida:
-        print(f"Funciona: {salida}")
-        return True 
-    else:
-        print(f"No funciona: {salida}")
+    try:
+        if cedula in salida:
+            print(f"Funciona: {salida}")
+            return True 
+    except Exception as e:
+        print(f"No funciona: {e}")
         return False
 
 if __name__ == "__main__":
