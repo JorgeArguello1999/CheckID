@@ -1,11 +1,10 @@
 from PIL import Image
-import face_recognition, pytesseract
 from io import BytesIO
 import numpy as np 
-import argparse, base64, re
+import argparse, base64, face_recognition
 
 # Función principal
-def face_compare(image1, image2, cedula:str):
+def face_compare(image1, image2):
     """
     Recibe imagenes en Base64
     :param image1
@@ -31,17 +30,9 @@ def face_compare(image1, image2, cedula:str):
     else:
         faces = False
     
-    # Validamos la cédula
-    ced = ced_compare(
-        cedula,
-        imagen1["image_text"],
-        imagen2["image_text"]
-    )
-
     return {
         "distance": distancia,
         "faces": faces,
-        "cedula": ced 
     }
 
 # Transformamos de base64 a numpy array
@@ -55,29 +46,7 @@ def base64_to_numpy(image):
     img_array = np.array(image)
     return {
         "image_encode": face_recognition.face_encodings(img_array)[0],
-        "image_text": get_text(image)
     }
-
-# Obtener texto de la imagen 
-def get_text(image):
-    try:
-        texto_image = pytesseract.image_to_string(image)
-        salida = re.findall(r'\d', texto_image)
-        return  ''.join(salida)
-    except Exception as e:
-       print(f"Error:    {e}")
-       return False
-
-# Comparar cédula
-def ced_compare(cedula:str, image1, image2):
-    print("1era Foto:", image1)
-    print("2da Foto:", image2)
-
-    if cedula in image1 or cedula in image2:
-        ced = True
-    else:
-        ced = False
-    return ced
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Comparar rostros en dos imágenes.")

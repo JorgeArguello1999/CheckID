@@ -1,46 +1,50 @@
-import requests
-import json
-import base64
+from google.cloud import vision_v1p3beta1 as vision
+from google.oauth2 import service_account
+import base64, re
 
-# Define las variables de configuración
-API_KEY = ""
-PROJECT_ID = "validacionbiometrica"
-
-# Realiza la solicitud a la API de Vision
-def get_text_from_image(image_base64) -> json:
+def text_detection(credenciales_json:str, image, cedula:str, compare_or_text="compare"):
     """
-    :param image_base64 
-    Recibe la imagen en base64 y devuelve un json
-    """
-    url = "https://vision.googleapis.com/v1/images:annotate"
-    headers = {"Authorization": f"Bearer {API_KEY}"}
-    data = {
-        "requests": [
-            {
-                "image": {"content": image_base64},
-                "features": [{"type": "TEXT_DETECTION"}],
-            }
-        ]
-    }
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-    # return response.json()["responses"][0]["textAnnotations"]
-    return response
+    Detectar con el OCR de Google el texto de la imagen
 
-# Obtiene la imagen en base64
-def get_image_base64(image_path):
-    with open(image_path, "rb") as f:
-        image_data = f.read()
-    return base64.b64encode(image_data).decode("utf-8")
+    :param credentials -> Ruta donde esta la credencial JSON
+    :param image -> Imágen en Base64 
+    :param cedula -> Número de cédula en tipo string
+    :param compare_or_text -> Elije si comparar las cédulas o solo devolver el texto
+    por defecto "compare", en caso contrario escriba "text"
+    """
+    # Crear un cliente de Cloud Vision
+    credenciales = service_account.Credentials.from_service_account_file(credenciales_json)
+    cliente_vision = vision.ImageAnnotatorClient(credentials=credenciales)
+    
+    # Cargo la imagen en Base64
+    contenido_imagen = base64.b64decode(image)
+
+    # Crear un objeto de imagen
+    imagen = vision.Image(content=contenido_imagen)
+    # Realizar la solicitud de detección de texto
+    resultado = cliente_vision.text_detection(image=imagen)
+    textos_detectados = resultado.text_annotations
+    # El primer elemento es el texto completo detectado en la imagen
+    texto_completo = textos_detectados[0].description
+
+    if compare_or_text == "compare":
+        return cedula_compare(cedula, texto_completo)
+    if compare_or_text == "text":
+        return texto_completo
+
+def cedula_compare(cedula:str, img_text:str)-> bool:
+    # Filtramos la salida, conservamos solo números
+    salida = re.findall(r'\d', img_text)
+    salida = (''.join(salida))
+
+    if cedula in salida:
+        print(f"Funciona: {salida}")
+        return True 
+    else:
+        print(f"No funciona: {salida}")
+        return False
 
 if __name__ == "__main__":
-    # image_path = input("Ingresa la ruta: ")
-    image_path = "/home/jorge/Imágenes/Fotos_Prueba/cedulas/cedula_tipo.jpeg"
-    image_base64 = get_image_base64(image_path)
-    text_annotations = get_text_from_image(image_base64)
-
-    print(text_annotations)
-    # Imprime el texto de la imagen
-    """
-    for text_annotation in text_annotations:
-        print(text_annotation["description"])
-    """
+    credenciales_json = '../tokens/validacionbiometrica-2c6740b82cc4.json'
+    salida = text_detection(credenciales_json, "")
+    print(salida)

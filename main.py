@@ -4,9 +4,11 @@ from fastapi import FastAPI, File, UploadFile, Form
 # Modules
 import modules.face_detection as face_detection
 import modules.google_storage as google_storage
+import modules.text_detection_google as text_detection_google
 
 # Start FastAPI
 app = FastAPI()
+credenciales_json = 'tokens/validacionbiometrica-2c6740b82cc4.json'
 
 # Modelo para recibir el JSON 
 # con las imágenes codificadas en base64
@@ -52,10 +54,17 @@ async def create_upload_files(data: ImageData):
         result = face_detection.face_compare(
             data.image1, 
             data.image2, 
+        )
+
+        # Comparando Cedulas
+        salida = text_detection_google.text_detection(
+            credenciales_json, 
+            data.image1,
             data.cedula
         )
-        result["save_on_google"] = False
+        print(salida)
 
+        result["save_on_google"] = False
         # Guardando las imagenes en el google cloud
         if result["faces"] == True and result["cedula"] == True:
             try:
