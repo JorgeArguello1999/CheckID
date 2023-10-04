@@ -48,8 +48,3 @@ def cedula_compare(cedula:str, img_text:str)-> bool:
     except Exception as e:
         print(f"No funciona: {e}")
         return False
-
-if __name__ == "__main__":
-    credenciales_json = '../tokens/validacionbiometrica-2c6740b82cc4.json'
-    salida = text_detection(credenciales_json, "")
-    print(salida)
