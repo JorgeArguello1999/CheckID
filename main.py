@@ -8,7 +8,7 @@ import modules.text_detection_google as text_detection_google
 
 # Start FastAPI
 app = FastAPI()
-credenciales_json = 'tokens/validacionbiometrica-2c6740b82cc4.json'
+credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
 
 # Modelo para recibir el JSON 
 # con las imágenes codificadas en base64

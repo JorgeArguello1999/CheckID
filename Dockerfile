@@ -9,9 +9,12 @@ COPY requirements.txt .
 
 # Instala las dependencias de Python
 RUN apt-get update 
-RUN apt-get install tesseract-ocr -y
 # Instala gcloud para vertex
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.asc] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.asc && apt-get update -y && apt-get install google-cloud-sdk -y
+
+# Crea las variables de entorno 
+ENV GOOGLE_APPLICATION_CREDENTIALS=/app/tokens/validacionbiometrica-2c6740b82cc4.json
+ENV GOOGLE_CLOUD_PROJECT="validacionbiometrica"    
 
 # Instala las dependencias de Python
 RUN pip install -r requirements.txt
