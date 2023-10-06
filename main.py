@@ -33,8 +33,8 @@ async def help():
         "manual": {
             "method": "To use this API, make a POST request with JSON formatted as follows",
             "format": {
-                "image1": "image_in_base64", 
-                "image2": "image_in_base64",
+                "cedula_image": "image_in_base64", 
+                "face_image": "image_in_base64",
                 "cedula": "1601000000"
             }
         },
@@ -52,19 +52,12 @@ async def create_upload_files(data: ImageData):
     try:
         # Comparando las imagenes 
         result = face_detection.face_compare(
-            data.image1, 
-            data.image2, 
+            data.cedula_image, 
+            data.faces_image, 
         )
 
         # Comparando Cedulas
-        cedulas = [
-            text_detection_google.text_detection(credenciales_json, data.image1, data.cedula),
-            text_detection_google.text_detection(credenciales_json, data.image2, data.cedula)
-        ]
-        if cedulas[0]==True or cedulas[1]==True:
-            cedula = True
-        else:
-            cedula = False 
+        cedula = text_detection_google.text_detection(credenciales_json, data.cedula_image, data.faces_image)
 
         result["save_on_google"] = False
         result["cedula"] = cedula
@@ -73,9 +66,10 @@ async def create_upload_files(data: ImageData):
         if result["faces"] == True and result["cedula"] == True:
             try:
                 result["save_on_google"] = google_storage.save_google(data, data.cedula)
+
             except Exception as e:
                 result["save_on_google"] = google_storage.save(data, data.cedula)
-                print(f"Erro:   {e}")
+                print(f"Error:   {e}")
         
         return result
 
