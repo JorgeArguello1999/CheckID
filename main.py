@@ -14,8 +14,8 @@ credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
 # con las imágenes codificadas en base64
 # Y la cédula
 class ImageData(BaseModel):
-    image1: str
-    image2: str
+    cedula_image: str
+    faces_image: str
     cedula: str
 
 # Welcome message 
@@ -34,7 +34,7 @@ async def help():
             "method": "To use this API, make a POST request with JSON formatted as follows",
             "format": {
                 "cedula_image": "image_in_base64", 
-                "face_image": "image_in_base64",
+                "faces_image": "image_in_base64",
                 "cedula": "1601000000"
             }
         },
@@ -54,21 +54,20 @@ async def create_upload_files(data: ImageData):
         result = face_detection.face_compare(
             data.cedula_image, 
             data.faces_image, 
-        )
+        )    
+        result["save_on_google"] = False
 
         # Comparando Cedulas
-        cedula = text_detection_google.text_detection(credenciales_json, data.cedula_image, data.faces_image)
-
-        result["save_on_google"] = False
+        cedula = text_detection_google.text_detection(credenciales_json, data.cedula_image, data.cedula)
         result["cedula"] = cedula
 
         # Guardando las imagenes en el google cloud
         if result["faces"] == True and result["cedula"] == True:
             try:
-                result["save_on_google"] = google_storage.save_google(data, data.cedula)
+                result["save_on_google"] = google_storage.save_google(data.cedula_image, data.faces_image, data.cedula)
 
             except Exception as e:
-                result["save_on_google"] = google_storage.save(data, data.cedula)
+                result["save_on_google"] = google_storage.save(data.cedula_image, data.faces_image, data.cedula)
                 print(f"Error:   {e}")
         
         return result

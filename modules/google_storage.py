@@ -5,14 +5,14 @@ import base64
 GCS_BUCKET_NAME = "imgvalidacion"
 IMAGEDIR = "./photos/"
 
-def save(images, cedula:str):
+def save(cedula_image, faces_image, cedula:str):
     # Decodificar las imágenes en base64
-    image1_data = base64.b64decode(images.image1)
-    image2_data = base64.b64decode(images.image2)
+    image1_data = base64.b64decode(cedula_image)
+    image2_data = base64.b64decode(faces_image)
 
     # Generar nombres de archivo únicos
-    filename1 = f"{cedula}_foto.jpg"
-    filename2 = f"{cedula}_cedula.jpg"
+    filename1 = f"{cedula}_cedula.jpg"
+    filename2 = f"{cedula}_faces.jpg"
 
     # Guardar las imágenes en el directorio IMAGEDIR
     with open(os.path.join(IMAGEDIR, filename1), "wb") as f1, \
@@ -28,14 +28,14 @@ def save(images, cedula:str):
 
     return [filename1, filename2] 
 
-def save_google(images, cedula:str):
+def save_google(cedula_image, faces_image, cedula:str):
     # Decodificar las imágenes en base64
-    image1_data = base64.b64decode(images.image1)
-    image2_data = base64.b64decode(images.image2)
+    image1_data = base64.b64decode(cedula_image)
+    image2_data = base64.b64decode(faces_image)
 
     # Generar nombres de archivo únicos
-    filename1 = f"{cedula}_foto.jpg"
-    filename2 = f"{cedula}_cedula.jpg"
+    filename1 = f"{cedula}_cedula.jpg"
+    filename2 = f"{cedula}_faces.jpg"
 
     # Subir las imágenes a Google Cloud Storage
     storage_client = storage.Client()

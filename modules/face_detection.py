@@ -4,15 +4,16 @@ import numpy as np
 import argparse, base64, face_recognition
 
 # Función principal
-def face_compare(image1, image2):
+def face_compare(cedula_image, faces_image):
     """
     Recibe imagenes en Base64
     :param image1
     :param image2
     """
+
     # Codificar los rostros en ambas imágenes
-    imagen1 = base64_to_numpy(image1)
-    imagen2 = base64_to_numpy(image2)
+    imagen1 = base64_to_numpy(cedula_image)
+    imagen2 = base64_to_numpy(faces_image)
 
     # Calculamos la distancia
     distancia = face_recognition.face_distance(
