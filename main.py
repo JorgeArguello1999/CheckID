@@ -29,9 +29,9 @@ async def home():
 @app.get("/upload/")
 async def help():
     return {
-        "message": "Welcome to the face detection API",
+        "message": "Bienvenido a API Face_Compare",
         "manual": {
-            "method": "To use this API, make a POST request with JSON formatted as follows",
+            "method": "La API utiliza una petición POST con formato JSON",
             "format": {
                 "cedula_image": "image_in_base64", 
                 "faces_image": "image_in_base64",
@@ -39,10 +39,14 @@ async def help():
             }
         },
         "response format": {
-            "distance": "This value indicates the similarity between the two faces. When the distance is greater than 0.5, the faces are not the same. A distance less than 0.5 indicates similarity",
+            "distance": "Mientras más cercana a 0, más similares son los rostros",
             "faces": "True or False",
             "cedula": "True or False",
-            "save_on_google": "False but is True returns a name the file on google bucket"
+            "save_on_google > True": [
+                "1601000000_cedula.jpg",
+                "1601000000_faces.jpg"
+            ],
+            "save_on_google > False": "False"
         }
     }
 
