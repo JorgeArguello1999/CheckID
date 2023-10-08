@@ -60,11 +60,14 @@ async def create_upload_files(data: ImageData):
         )    
 
         # Comparando Cedulas
-        cedula = text_detection.text_detection(credenciales_json, data.cedula_image, data.cedula)
-        result["cedula"] = cedula
+        result["cedula"] = text_detection.text_detection(
+            credenciales_json, 
+            data.cedula_image, 
+            data.cedula
+        )
 
-        # Guardando las imagenes en el google cloud
         if result["faces"] == True and result["cedula"] == True:
+            # Guardando las imagenes en el google cloud
             result["save_on_google"] = google_storage.save(
                 data.cedula_image, 
                 data.faces_image, 
