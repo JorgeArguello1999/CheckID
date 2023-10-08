@@ -6,9 +6,9 @@ import argparse, base64, face_recognition
 # Función principal
 def face_compare(cedula_image, faces_image):
     """
-    Recibe imagenes en Base64
-    :param image1
-    :param image2
+    Modulo para comparar rostros
+    :param cedula_image -> Imágen de la cédula
+    :param faces_image -> Imágen del rostro
     """
 
     # Codificar los rostros en ambas imágenes

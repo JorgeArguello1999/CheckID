@@ -4,7 +4,7 @@ from fastapi import FastAPI
 # Modules
 import modules.face_detection as face_detection
 import modules.google_storage as google_storage
-import modules.text_detection_google as text_detection_google
+import modules.text_detection as text_detection
 
 # Start FastAPI
 app = FastAPI()
@@ -60,7 +60,7 @@ async def create_upload_files(data: ImageData):
         )    
 
         # Comparando Cedulas
-        cedula = text_detection_google.text_detection(credenciales_json, data.cedula_image, data.cedula)
+        cedula = text_detection.text_detection(credenciales_json, data.cedula_image, data.cedula)
         result["cedula"] = cedula
 
         # Guardando las imagenes en el google cloud
