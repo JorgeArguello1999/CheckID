@@ -1,8 +1,5 @@
-import os 
 from google.cloud import storage
 import base64
-
-IMAGEDIR = "./photos/"
 
 def save(cedula_image, faces_image, cedula:str, bucket_name:str):
     """
@@ -39,16 +36,4 @@ def save(cedula_image, faces_image, cedula:str, bucket_name:str):
         return gcs_paths
 
     except Exception as e:
-        # Guardar las imágenes en el directorio IMAGEDIR
-        with open(os.path.join(IMAGEDIR, filename1), "wb") as f1, \
-            open(os.path.join(IMAGEDIR, filename2), "wb") as f2:
-            f1.write(image1_data)
-            f2.write(image2_data)
-        
-        # Retornando las rutas de guardado 
-        filename = [
-            os.path.join(IMAGEDIR, filename1),
-            os.path.join(IMAGEDIR, filename2)
-        ]
-        print(f"Error:    {e}")
-        return [filename1, filename2] 
+        return f"Error: {e}"
