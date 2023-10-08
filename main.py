@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI
 
 # Modules
 import modules.face_detection as face_detection
@@ -8,11 +8,10 @@ import modules.text_detection_google as text_detection_google
 
 # Start FastAPI
 app = FastAPI()
-credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
 
-# Modelo para recibir el JSON 
-# con las imágenes codificadas en base64
-# Y la cédula
+credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
+GCS_BUCKET_NAME = "imgvalidacion"
+
 class ImageData(BaseModel):
     cedula_image: str
     faces_image: str
@@ -59,7 +58,6 @@ async def create_upload_files(data: ImageData):
             data.cedula_image, 
             data.faces_image, 
         )    
-        result["save_on_google"] = False
 
         # Comparando Cedulas
         cedula = text_detection_google.text_detection(credenciales_json, data.cedula_image, data.cedula)
@@ -67,13 +65,15 @@ async def create_upload_files(data: ImageData):
 
         # Guardando las imagenes en el google cloud
         if result["faces"] == True and result["cedula"] == True:
-            try:
-                result["save_on_google"] = google_storage.save_google(data.cedula_image, data.faces_image, data.cedula)
+            result["save_on_google"] = google_storage.save(
+                data.cedula_image, 
+                data.faces_image, 
+                data.cedula, 
+                GCS_BUCKET_NAME
+            )
+        else:
+            result["save_on_google"] = False
 
-            except Exception as e:
-                result["save_on_google"] = google_storage.save(data.cedula_image, data.faces_image, data.cedula)
-                print(f"Error:   {e}")
-        
         return result
 
     except Exception as e:
