@@ -3,9 +3,8 @@ from pydantic import BaseModel
 from fastapi import FastAPI, BackgroundTasks
 
 # Modules
-import modules.face_detection as face_detection
+import modules.func_detection as detection
 import modules.google_storage as google_storage
-import modules.text_detection as text_detection
 
 # Start FastAPI
 app = FastAPI()
@@ -58,14 +57,14 @@ async def create_upload_files(data: ImageData, background_tasks: BackgroundTasks
         with ThreadPoolExecutor(max_workers=2) as executor:
             # Definir una función para la comparación de imágenes en un hilo
             def compare_images():
-                return face_detection.face_compare(
+                return detection.face_compare(
                     data.cedula_image, 
                     data.faces_image
                 )
 
             # Definir una función para la comparación de cédulas en otro hilo
             def compare_cedulas():
-                return text_detection.text_detection(
+                return detection.text_detection(
                     credenciales_json, 
                     data.cedula_image, 
                     data.cedula
