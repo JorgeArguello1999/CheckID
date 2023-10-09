@@ -1,14 +1,12 @@
-from concurrent.futures import ThreadPoolExecutor
-from pydantic import BaseModel
+# main.py
 from fastapi import FastAPI, BackgroundTasks
-
-# Modules
+from pydantic import BaseModel
+from concurrent.futures import ThreadPoolExecutor
+from typing import List
 import modules.func_detection as detection
 import modules.google_storage as google_storage
 
-# Start FastAPI
 app = FastAPI()
-
 credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
 GCS_BUCKET_NAME = "imgvalidacion"
 
@@ -17,7 +15,6 @@ class ImageData(BaseModel):
     faces_image: str
     cedula: str
 
-# Welcome message 
 @app.get("/")
 async def home():
     return {
@@ -49,38 +46,16 @@ async def help():
         }
     }
 
-# Endpoint para cargar y comparar imágenes en formato JSON
 @app.post("/upload/")
 async def create_upload_files(data: ImageData, background_tasks: BackgroundTasks):
     try:
-        # Crear un ThreadPoolExecutor para ejecutar las tareas en hilos
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            # Definir una función para la comparación de imágenes en un hilo
-            def compare_images():
-                return detection.face_compare(
-                    data.cedula_image, 
-                    data.faces_image
-                )
-
-            # Definir una función para la comparación de cédulas en otro hilo
-            def compare_cedulas():
-                return detection.text_detection(
-                    credenciales_json, 
-                    data.cedula_image, 
-                    data.cedula
-                )
-
-            # Ejecutar ambas funciones en hilos separados y obtener los resultados
-            result_images = executor.submit(compare_images)
-            result_cedulas = executor.submit(compare_cedulas)
-
-            # Esperar a que ambos hilos terminen y obtener los resultados
-            result_images = result_images.result()
-            result_cedulas = result_cedulas.result()
+        # Realizar la comparación de imágenes y cédulas sin hilos
+        result_images = detection.face_compare(data.cedula_image, data.faces_image)
+        result_cedulas = detection.text_detection(credenciales_json, data.cedula_image, data.cedula)
 
         # Comprobar los resultados y continuar con la parte de guardar en Google
         if result_images["faces"] and result_cedulas:
-            # Guardando las imágenes en el google cloud en un hilo único
+            # Guardar las imágenes en el google cloud en un hilo único
             background_tasks.add_task(
                 google_storage.save,
                 data.cedula_image,
@@ -107,5 +82,5 @@ async def create_upload_files(data: ImageData, background_tasks: BackgroundTasks
 
     except Exception as e:
         return {
-            "error as ocurred": str(e)
+            "error as occurred": str(e)
         }
