@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-import modules.func_detection as detection
+import modules.face_compare as detection
 import modules.google_storage as google_storage
 
 class ImageData(BaseModel):
