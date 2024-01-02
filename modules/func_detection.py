@@ -1,10 +1,17 @@
 from google.cloud import vision_v1p3beta1 as vision
 from google.oauth2 import service_account
+from dotenv import load_dotenv
 from PIL import Image
 from io import BytesIO
 
 import numpy as np 
 import base64, face_recognition
+import os
+
+# Cargamos variables de entorno
+load_dotenv()
+
+credenciales_json = os.getenv('CREDENTIALS')
 
 # Transformamos de base64 a numpy array
 def base64_to_numpy(image):
@@ -49,7 +56,7 @@ def face_compare(cedula_image, faces_image):
     }
 
 # Detección de textos
-def text_detection(credenciales_json:str, image, cedula:str):
+def text_detection(image, cedula:str):
     """
     Detectar con el OCR de Google el texto de la imagen
 

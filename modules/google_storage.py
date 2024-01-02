@@ -1,7 +1,13 @@
 from google.cloud import storage
-import base64
+from dotenv import load_dotenv
 
-def save(cedula_image, faces_image, cedula:str, bucket_name:str):
+import base64
+import os 
+
+# Iniciamos las variables de entorno
+bucket_name = os.getenv('BUCKET')
+
+def save(cedula_image, faces_image, cedula:str):
     """
     Guardamos las imagenes 
     :param cedula_image -> Foto de la Imagen
