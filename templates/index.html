@@ -57,35 +57,69 @@
             }
         }
 
-        function subirImagenes() {
-            var cedula = document.getElementById('cedula').value;
-            var formData = new FormData();
+        // Asignar la función mostrarImagen a los inputs de tipo file
+        document.getElementById('image1').addEventListener('change', function () {
+            mostrarImagen(this, document.getElementById('preview1'));
+        });
 
-            // Leer la primera imagen en base64
-            var image1Input = document.getElementById('image1');
-            if (image1Input.files && image1Input.files[0]) {
-                var reader1 = new FileReader();
-                reader1.onload = function (e) {
-                    formData.append('image1', e.target.result);
-                };
-                reader1.readAsDataURL(image1Input.files[0]);
-            }
+        document.getElementById('image2').addEventListener('change', function () {
+            mostrarImagen(this, document.getElementById('preview2'));
+        });
+    </script>
 
-            // Leer la segunda imagen en base64
-            var image2Input = document.getElementById('image2');
-            if (image2Input.files && image2Input.files[0]) {
-                var reader2 = new FileReader();
-                reader2.onload = function (e) {
-                    formData.append('image2', e.target.result);
-                };
-                reader2.readAsDataURL(image2Input.files[0]);
-            }
+    <script>
+    function subirImagenes() {
+        var cedula = document.getElementById('cedula').value;
+        var formData = new FormData();
 
-            formData.append('cedula', cedula);
+        // Leer la primera imagen en base64
+        var image1Input = document.getElementById('image1');
+        if (image1Input.files && image1Input.files[0]) {
+            var reader1 = new FileReader();
+            reader1.onload = function (e) {
+                var base64content = e.target.result.split(',')[1]; // Obtener solo el contenido base64
+                console.log(base64content);
+                formData.append('image1', base64content);
+                checkAndSubmit(formData, cedula); // Función para verificar y enviar los datos
+            };
+            reader1.readAsDataURL(image1Input.files[0]);
+        }
 
+        // Leer la segunda imagen en base64
+        var image2Input = document.getElementById('image2');
+        if (image2Input.files && image2Input.files[0]) {
+            var reader2 = new FileReader();
+            reader2.onload = function (e) {
+                var base64content = e.target.result.split(',')[1]; // Obtener solo el contenido base64
+                formData.append('image2', base64content);
+                checkAndSubmit(formData, cedula); // Función para verificar y enviar los datos
+            };
+            reader2.readAsDataURL(image2Input.files[0]);
+        }
+
+        formData.append('cedula', cedula);
+    }
+
+    function checkAndSubmit(formData, cedula) {
+        // Verifica si ambos archivos han sido leídos antes de enviar el formulario
+        if (formData.has('image1') && formData.has('image2')) {
+            // Construye un objeto con los datos en el formato necesario
+            var jsonData = {
+                cedula: cedula,
+                cedula_image: formData.get('image1'),
+                faces_image: formData.get('image2')
+            };
+
+            // Imprime el JSON en la consola
+            console.log(JSON.stringify(jsonData));
+
+            // Enviar los datos con Fetch a la API
             fetch('http://localhost:8000/upload/', {
                 method: 'POST',
-                body: formData
+                body: JSON.stringify(jsonData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(response => response.json())
             .then(data => {
@@ -96,15 +130,9 @@
                 console.error('Error:', error);
             });
         }
+    }
 
-        // Asignar la función mostrarImagen a los inputs de tipo file
-        document.getElementById('image1').addEventListener('change', function () {
-            mostrarImagen(this, document.getElementById('preview1'));
-        });
-
-        document.getElementById('image2').addEventListener('change', function () {
-            mostrarImagen(this, document.getElementById('preview2'));
-        });
     </script>
+
 </body>
 </html>
