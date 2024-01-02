@@ -1,6 +1,8 @@
 from pydantic import BaseModel
-import modules.face_compare as detection
 import modules.google_storage as google_storage
+
+from modules.text_detection import text_detection
+from modules.face_compare import face_compare
 
 class ImageData(BaseModel):
     cedula_image: str
@@ -10,8 +12,8 @@ class ImageData(BaseModel):
 def process_image_data(data: ImageData):
     try:
         # Realizar la comparación de imágenes y cédulas
-        result_images = detection.face_compare(data.cedula_image, data.faces_image)
-        result_cedulas = detection.text_detection(data.cedula_image, data.cedula)
+        result_images = face_compare(data.cedula_image, data.faces_image)
+        result_cedulas = text_detection(data.cedula_image, data.cedula)
 
         save_on_google = False
 
@@ -24,15 +26,15 @@ def process_image_data(data: ImageData):
                 f"{data.cedula}_faces.jpg"
             ]
 
-        # Construir y retornar la respuesta final
-        response = {
-            "distance": result_images["distance"],
-            "faces": result_images["faces"],
-            "cedula": result_cedulas,
-            "save_on_google": save_on_google  
-        }
+            # Construir y retornar la respuesta final
+            response = {
+                "distance": result_images["distance"],
+                "faces": result_images["faces"],
+                "cedula": result_cedulas,
+                "save_on_google": save_on_google  
+            }
 
-        return response
+            return response
 
     except Exception as e:
         return {

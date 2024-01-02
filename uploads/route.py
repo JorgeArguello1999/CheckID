@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from fastapi import HTTPException
-from fastapi import BackgroundTasks
 
 from typing import Dict
 import json
@@ -22,6 +21,6 @@ async def method_get():
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
 
 @router.post("/upload")
-async def upload_image(data: ImageData, background_tasks: BackgroundTasks):
+async def upload_image(data: ImageData):
     result = process_image_data(data)
     return result

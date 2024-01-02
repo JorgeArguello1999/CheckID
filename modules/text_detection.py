@@ -1,13 +1,9 @@
 from google.cloud import vision_v1p3beta1 as vision
 from google.oauth2 import service_account
 
-import os
 import base64
 
-from dotenv import load_dotenv
-# Cargamos variables de entorno
-load_dotenv()
-credenciales_json = os.getenv('CREDENTIALS')
+credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
 
 # Detección de textos
 def text_detection(image, cedula:str):

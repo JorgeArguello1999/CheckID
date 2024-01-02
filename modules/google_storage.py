@@ -1,12 +1,11 @@
 from google.cloud import storage
-from dotenv import load_dotenv
+from google.cloud import storage
+
+# Configurar la credencial desde un archivo JSON descargado desde GCP
+credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
+storage_client = storage.Client.from_service_account_json(credenciales_json)
 
 import base64
-import os 
-
-# Iniciamos las variables de entorno
-load_dotenv()
-bucket_name = os.getenv('BUCKET')
 
 def save(cedula_image, faces_image, cedula:str):
     """
@@ -27,7 +26,7 @@ def save(cedula_image, faces_image, cedula:str):
     try:
         # Subir las imágenes a Google Cloud Storage
         storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
+        bucket = storage_client.bucket('imgvalidacion')
     
         blob1 = bucket.blob(filename1)
         blob2 = bucket.blob(filename2)
@@ -44,3 +43,22 @@ def save(cedula_image, faces_image, cedula:str):
 
     except Exception as e:
         return f"Error: {e}"
+
+if __name__ == '__main__':
+    import base64
+    from PIL import Image
+
+    # Ruta de la imagen que quieres convertir a base64
+    path_to_image = 'cedula.jpeg'
+
+    # Abrir la imagen
+    with open(path_to_image, 'rb') as file:
+        img = Image.open(file)
+        img.show()  # Abre la imagen en tu visor de imágenes predeterminado
+
+    # Codificar la imagen a base64
+    with open(path_to_image, 'rb') as file:
+        image_base64 = base64.b64encode(file.read()).decode('utf-8')
+
+    salida = save(image_base64, image_base64, '1600644353')
+    print(salida)
