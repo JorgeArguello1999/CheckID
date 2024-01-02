@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subir Imágenes con Previsualización</title>
+    <style>
+        /* Estilos para centrar el div 'form' */
+        .form {
+            text-align: center;
+        }
+
+        /* Estilos para los divs 'form-1' y 'form-2' */
+        .form-1,
+        .form-2 {
+            display: inline-block; /* Mostrar los divs en línea uno al lado del otro */
+            margin: 10px; /* Agregar margen entre ellos para separación */
+            border: dashed;
+            padding: 1em;
+        }
+
+        /* Estilos para las imágenes de previsualización */
+        img {
+            max-width: 200px;
+            max-height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Subir Imágenes con Previsualización</h1>
+    <div class="form">
+        <div class="form-1">
+            <input type="file" name="image1" id="image1" accept="image/jpeg" required>
+            <br>
+            <img src="" alt="" id="preview1" style="max-width: 200px; max-height: 200px;">
+        </div>
+
+        <div class="form-2">
+            <input type="file" name="image2" id="image2" accept="image/jpeg" required>
+            <br>
+            <img src="" alt="" id="preview2" style="max-width: 200px; max-height: 200px;">
+        </div>
+
+        <label for="cedula">Cedula:</label>
+        <input name="cedula" type="text" id="cedula">
+        <br>
+        <button onclick="subirImagenes()">Subir Imágenes</button>
+    </div>
+
+    <script>
+        function mostrarImagen(input, imgElement) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    imgElement.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function subirImagenes() {
+            var cedula = document.getElementById('cedula').value;
+            var formData = new FormData();
+            formData.append('image1', document.getElementById('image1').files[0]);
+            formData.append('image2', document.getElementById('image2').files[0]);
+            formData.append('cedula', cedula);
+
+            fetch('http://localhost:8000/upload/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Hacer algo con la respuesta si es necesario
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Asignar la función mostrarImagen a los inputs de tipo file
+        document.getElementById('image1').addEventListener('change', function () {
+            mostrarImagen(this, document.getElementById('preview1'));
+        });
+
+        document.getElementById('image2').addEventListener('change', function () {
+            mostrarImagen(this, document.getElementById('preview2'));
+        });
+    </script>
+</body>
+</html>
