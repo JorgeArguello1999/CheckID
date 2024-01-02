@@ -60,8 +60,27 @@
         function subirImagenes() {
             var cedula = document.getElementById('cedula').value;
             var formData = new FormData();
-            formData.append('image1', document.getElementById('image1').files[0]);
-            formData.append('image2', document.getElementById('image2').files[0]);
+
+            // Leer la primera imagen en base64
+            var image1Input = document.getElementById('image1');
+            if (image1Input.files && image1Input.files[0]) {
+                var reader1 = new FileReader();
+                reader1.onload = function (e) {
+                    formData.append('image1', e.target.result);
+                };
+                reader1.readAsDataURL(image1Input.files[0]);
+            }
+
+            // Leer la segunda imagen en base64
+            var image2Input = document.getElementById('image2');
+            if (image2Input.files && image2Input.files[0]) {
+                var reader2 = new FileReader();
+                reader2.onload = function (e) {
+                    formData.append('image2', e.target.result);
+                };
+                reader2.readAsDataURL(image2Input.files[0]);
+            }
+
             formData.append('cedula', cedula);
 
             fetch('http://localhost:8000/upload/', {

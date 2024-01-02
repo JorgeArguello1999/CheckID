@@ -2,13 +2,18 @@ from fastapi.responses import HTMLResponse
 from fastapi import APIRouter
 from fastapi import File
 
+from fastapi import Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+# Directorio donde se encuentran tus plantillas HTML
+templates = Jinja2Templates(directory="templates")
+
 router = APIRouter()
 
 @router.get("/", response_class=HTMLResponse)
-async def home_get():
-    with open('home/index.html', 'r') as file:
-        html_content = file.read()
-        return HTMLResponse(content=html_content)
+async def home_get(request: Request):
+    return templates.TemplateResponse('index.html', {"request": request})
 
 @router.post("/")
 async def home():
