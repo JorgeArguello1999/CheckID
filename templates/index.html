@@ -1,50 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Subir Imágenes con Previsualización</title>
+    <title>Validación Biometrica</title>
+    <!-- Enlace al archivo de estilos de Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Estilos para centrar el div 'form' */
-        .form {
-            text-align: center;
-        }
-
-        /* Estilos para los divs 'form-1' y 'form-2' */
-        .form-1,
-        .form-2 {
-            display: inline-block; /* Mostrar los divs en línea uno al lado del otro */
-            margin: 10px; /* Agregar margen entre ellos para separación */
-            border: dashed;
-            padding: 1em;
-        }
-
-        /* Estilos para las imágenes de previsualización */
-        img {
+        /* Añade estilos personalizados aquí si es necesario */
+        .preview-img {
             max-width: 200px;
             max-height: 200px;
         }
+        .response-space {
+            margin-top: 20px;
+        }
+        .response-area {
+            background-color: #cce5ff; /* Color azul para el área de respuesta */
+            padding: 20px;
+            border-radius: 10px;
+        }
     </style>
 </head>
-
 <body>
-    <h1>Subir Imágenes con Previsualización</h1>
-    <div class="form">
-        <div class="form-1">
-            <input type="file" name="image1" id="image1" accept="image/jpeg" required>
-            <br>
-            <img src="" alt="" id="preview1" style="max-width: 200px; max-height: 200px;">
+    <div class="container">
+        <h1 class="text-center mt-3">Validación Biometrica</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <p for="">Cédula:</p>
+                    <input type="file" name="image1" id="image1" accept="image/jpeg" required>
+                    <br>
+                    <img src="" alt="" id="preview1" class="preview-img mt-2">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <p for="">Foto del usuario:</p>
+                    <input type="file" name="image2" id="image2" accept="image/jpeg" required>
+                    <br>
+                    <img src="" alt="" id="preview2" class="preview-img mt-2">
+                </div>
+            </div>
         </div>
 
-        <div class="form-2">
-            <input type="file" name="image2" id="image2" accept="image/jpeg" required>
-            <br>
-            <img src="" alt="" id="preview2" style="max-width: 200px; max-height: 200px;">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <label for="cedula">Cedula:</label>
+                <input name="cedula" type="text" id="cedula" class="form-control">
+                <br>
+                <button onclick="subirImagenes()" class="btn btn-primary">Subir Imágenes</button>
+            </div>
         </div>
 
-        <label for="cedula">Cedula:</label>
-        <input name="cedula" type="text" id="cedula">
-        <br>
-        <button onclick="subirImagenes()">Subir Imágenes</button>
+        <div class="row mt-4 justify-content-center">
+            <div class="col-md-6 response-area" id="apiResponse">
+                <p id="apiResponseText"></p>
+            </div>
+        </div>
     </div>
+
+    <!-- Enlaces a los scripts de Bootstrap y jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
         function mostrarImagen(input, imgElement) {
@@ -114,9 +131,6 @@
                 faces_image: formData.get('image2')
             };
 
-            // Imprime el JSON en la consola
-            //console.log(JSON.stringify(jsonData));
-
             // Enviar los datos con Fetch a la API
             fetch(apiUrl, {
                 method: 'POST',
@@ -128,7 +142,9 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                // Hacer algo con la respuesta si es necesario
+                var parrafo = document.getElementById('apiResponse');
+                parrafo.textContent = `Faces: ${data.faces} \nCedula: ${data.cedula} \nGoogle Paths: ${data.save_on_google}`;
+                parrafo.parentElement.style.display = 'block';
             })
             .catch(error => {
                 console.error('Error:', error);
