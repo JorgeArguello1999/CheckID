@@ -5,6 +5,7 @@ import base64
 import os 
 
 # Iniciamos las variables de entorno
+load_dotenv()
 bucket_name = os.getenv('BUCKET')
 
 def save(cedula_image, faces_image, cedula:str):
