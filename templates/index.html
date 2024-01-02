@@ -78,7 +78,7 @@
             var reader1 = new FileReader();
             reader1.onload = function (e) {
                 var base64content = e.target.result.split(',')[1]; // Obtener solo el contenido base64
-                console.log(base64content);
+                //console.log(base64content);
                 formData.append('image1', base64content);
                 checkAndSubmit(formData, cedula); // Función para verificar y enviar los datos
             };
@@ -101,6 +101,10 @@
     }
 
     function checkAndSubmit(formData, cedula) {
+        var apiUrl = window.location.origin;
+        apiUrl = apiUrl+'/upload';
+        console.log(apiUrl);
+
         // Verifica si ambos archivos han sido leídos antes de enviar el formulario
         if (formData.has('image1') && formData.has('image2')) {
             // Construye un objeto con los datos en el formato necesario
@@ -111,10 +115,10 @@
             };
 
             // Imprime el JSON en la consola
-            console.log(JSON.stringify(jsonData));
+            //console.log(JSON.stringify(jsonData));
 
             // Enviar los datos con Fetch a la API
-            fetch('http://localhost:8000/upload/', {
+            fetch(apiUrl, {
                 method: 'POST',
                 body: JSON.stringify(jsonData),
                 headers: {
