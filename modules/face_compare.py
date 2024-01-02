@@ -1,4 +1,4 @@
-from modules import base64_to_numpy
+from modules.base64_to_numpy import base64_to_numpy
 import face_recognition
 
 # Detección de rostros
