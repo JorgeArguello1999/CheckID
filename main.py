@@ -1,3 +1,4 @@
+"""
 # main.py
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
@@ -15,12 +16,7 @@ class ImageData(BaseModel):
     faces_image: str
     cedula: str
 
-@app.get("/")
-async def home():
-    return {
-        "message": "Welcome to Face_Detection API",
-        "author": "Jorge Arguello al3x_argu",
-    }
+
 
 @app.get("/upload/")
 async def help():
@@ -84,3 +80,18 @@ async def create_upload_files(data: ImageData, background_tasks: BackgroundTasks
         return {
             "error as occurred": str(e)
         }
+"""
+
+from fastapi import FastAPI
+
+from home import router as home_route
+from uploads import router as upload_route
+
+app = FastAPI()
+
+app.include_router(upload_route)
+app.include_router(home_route)
+
+if __name__ == '__main__':
+    import uvicorn 
+    uvicorn.run(app, host="0.0.0.0", port=8000)
