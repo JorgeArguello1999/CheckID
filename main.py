@@ -16,32 +16,6 @@ class ImageData(BaseModel):
     faces_image: str
     cedula: str
 
-
-
-@app.get("/upload/")
-async def help():
-    return {
-        "message": "Bienvenido a API Face_Compare",
-        "manual": {
-            "method": "La API utiliza una petición POST con formato JSON",
-            "format": {
-                "cedula_image": "image_in_base64", 
-                "faces_image": "image_in_base64",
-                "cedula": "1601000000"
-            }
-        },
-        "response format": {
-            "distance": "Mientras más cercana a 0, más similares son los rostros",
-            "faces": "True or False",
-            "cedula": "True or False",
-            "save_on_google > True": [
-                "1601000000_cedula.jpg",
-                "1601000000_faces.jpg"
-            ],
-            "save_on_google > False": "False"
-        }
-    }
-
 @app.post("/upload/")
 async def create_upload_files(data: ImageData, background_tasks: BackgroundTasks):
     try:
