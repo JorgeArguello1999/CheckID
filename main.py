@@ -27,10 +27,17 @@ async def upload_file(
     n_id: str = Form(...),
 ):
 
-    file_paths = save_files([file1, file2])
+    result = "OK" 
+    file_paths = []
+
+    try:
+        file_paths = save_files([file1, file2])
+
+    except Exception as e:
+        result = "False"
 
     return {
-        "Status": "OK",
+        "Status": result,
         "n_id": n_id,
         "dirs": file_paths
     }
@@ -38,8 +45,9 @@ async def upload_file(
 
 if __name__ == '__main__':
     uvicorn.run(
-        app, 
-        host='0.0.0.1', 
+        "main:app",
+        host='127.0.0.1', 
         port=8000,
         reload=True,
+        workers=1
     )
