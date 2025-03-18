@@ -21,7 +21,7 @@ def compare_face(image1:str, image2:str) -> bool:
     face_encoding2 = face_encodings(image2)[0]
 
     # Compare the faces
-    return compare_faces([face_encoding1], face_encoding2)[0]
+    return compare_faces([face_encoding1], face_encoding2, tolerance=0.6)[0]
 
 if __name__ == "__main__":
     DIR = "uploads/"

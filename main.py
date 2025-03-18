@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, Form
-from modules import save_files
+from modules import save_files, compare_face
 import uvicorn
 
 # Start APP
@@ -31,7 +31,8 @@ async def upload_file(
     file_paths = []
 
     try:
-        file_paths = save_files([file1, file2])
+        # need a thread?
+        print()
 
     except Exception as e:
         result = f"error: {e}"
