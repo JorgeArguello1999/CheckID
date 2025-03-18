@@ -1,5 +1,5 @@
-from google.cloud import vision_v1p3beta1 as vision
-from google.oauth2 import service_account
+# from google.cloud import vision_v1p3beta1 as vision
+# from google.oauth2 import service_account
 
 import base64
 

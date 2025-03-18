@@ -1,9 +1,9 @@
-from google.cloud import storage
-from google.cloud import storage
+# from google.cloud import storage
+# from google.cloud import storage
 
 # Configurar la credencial desde un archivo JSON descargado desde GCP
 credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
-storage_client = storage.Client.from_service_account_json(credenciales_json)
+# storage_client = storage.Client.from_service_account_json(credenciales_json)
 
 import base64
 
@@ -25,6 +25,7 @@ def save(cedula_image, faces_image, cedula:str):
 
     try:
         # Subir las imágenes a Google Cloud Storage
+        """
         storage_client = storage.Client()
         bucket = storage_client.bucket('imgvalidacion')
     
@@ -33,6 +34,7 @@ def save(cedula_image, faces_image, cedula:str):
     
         blob1.upload_from_string(image1_data, content_type="image/jpeg")
         blob2.upload_from_string(image2_data, content_type="image/jpeg")
+        """
     
         # Retornar las rutas de guardado en GCS
         gcs_paths = [
