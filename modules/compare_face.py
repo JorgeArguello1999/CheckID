@@ -4,7 +4,6 @@ from face_recognition import (
     compare_faces
 )
 
-
 def compare_face(image1:str, image2:str) -> bool:
     """
     Compare two faces and return True if they are the same person

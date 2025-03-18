@@ -18,7 +18,13 @@ os.makedirs(updload_dir, exist_ok=True)
 async def read_root():
     return {
         "name": "CheckID",
-        "github": "https://github.com/JorgeArguello1999/CheckID.git"
+        "github": "https://github.com/JorgeArguello1999/CheckID.git",
+        "method": "POST",
+        "form": {
+            "file1": "file1.png",
+            "file2": "file2.png",
+            "n_id": "123456789"
+        }
     }
 
 # Upload route
@@ -39,6 +45,7 @@ async def upload_file(
     return {
         "Status": "OK",
         "n_id": n_id,
+        "dirs": file_paths
     }
 
 
