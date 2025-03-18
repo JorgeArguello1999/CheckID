@@ -1,17 +1,9 @@
 from fastapi import FastAPI, File, UploadFile, Form
-from typing import List
-
-import shutil 
-import os
+from modules import save_files
 import uvicorn
 
 # Start APP
 app = FastAPI()
-
-# Upload DIR
-updload_dir = 'uploads'
-os.makedirs(updload_dir, exist_ok=True)
-
 
 # View route
 @app.get('/')
@@ -35,13 +27,8 @@ async def upload_file(
     n_id: str = Form(...),
 ):
 
-    file_paths = []
-    for file in [file1, file2]:
-        file_path = os.path.join(updload_dir, file.filename)
-        with open(file_path, 'wb') as f:
-            shutil.copyfileobj(file.file, f)
-        file_paths.append(file_path)
-    
+    file_paths = save_files([file1, file2])
+
     return {
         "Status": "OK",
         "n_id": n_id,
