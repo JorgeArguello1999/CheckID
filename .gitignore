@@ -3,3 +3,4 @@ __pycache__/
 photos/
 tokens/
 .env
+uploads/
