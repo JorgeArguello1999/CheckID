@@ -34,7 +34,7 @@ async def upload_file(
         file_paths = save_files([file1, file2])
 
     except Exception as e:
-        result = "False"
+        result = f"error: {e}"
 
     return {
         "Status": result,
