@@ -1,5 +1,6 @@
 from face_recognition import face_encodings, compare_faces
 from face_recognition import load_image_file
+from face_recognition import face_distance
 
 import numpy as np
 
@@ -25,6 +26,10 @@ def compare_face(image1:str, image2:str) -> bool:
     # Load the images
     face_encoding1 = encode_image(image1) 
     face_encoding2 = encode_image(image2)
+
+    # Distance
+    distance1 = face_distance([face_encoding1], face_encoding2)
+    print(distance1)
 
     if face_encoding1 is False or face_encoding2 is False:
         return False
