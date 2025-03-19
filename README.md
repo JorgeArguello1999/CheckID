@@ -8,7 +8,7 @@ CheckID is a simple API that compares two faces from different images to verify 
 
 - [Your own docker image](#your-own-docker-image)
 - [Download docker image](#donwload-docker-image)
-- [Exec with python]()
+- [Exec with python](#exec-app-with-python)
 
 ### Your own Docker Image 
 
