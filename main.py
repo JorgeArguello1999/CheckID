@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile
 from modules import compare_face
 from modules import file_handler
 
@@ -17,18 +17,12 @@ async def read_root():
         "form": {
             "file1": "file1.png",
             "file2": "file2.png",
-            "n_id": "123456789"
         }
     }
 
 # Upload route
 @app.post('/') 
-async def upload_file(
-    file1: UploadFile = File(...),
-    file2: UploadFile = File(...),
-    n_id: str = Form(...),
-):
-
+async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(...)):
     try:
         file_paths = file_handler.save_files([file1, file2])
         result = compare_face.compare_face(file_paths[0], file_paths[1])
@@ -37,11 +31,7 @@ async def upload_file(
     except Exception as e:
         result = f"error: {e}"
 
-    return {
-        "Status": result,
-        "n_id": n_id,
-    }
-
+    return {"status": result}
 
 if __name__ == '__main__':
     uvicorn.run(
