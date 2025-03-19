@@ -25,6 +25,10 @@ async def read_root():
 async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(...)):
     try:
         file_paths = file_handler.save_files([file1, file2])
+        if len(file_paths) != 2:
+            file_handler.delete_files(file_paths)
+            raise Exception("Invalid files")
+
         result = compare_face.compare_face(file_paths[0], file_paths[1])
         file_handler.delete_files(file_paths)
 
