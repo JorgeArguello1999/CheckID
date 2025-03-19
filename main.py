@@ -1,5 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, Form
 from modules import compare_face
+from modules import file_handler
+
 import uvicorn
 
 # Start APP
@@ -28,7 +30,9 @@ async def upload_file(
 ):
 
     try:
-        result = await compare_face.compare_face(file1, file2)
+        file_paths = file_handler.save_files([file1, file2])
+        result = compare_face.compare_face(file_paths[0], file_paths[1])
+        file_handler.delete_files(file_paths)
 
     except Exception as e:
         result = f"error: {e}"
