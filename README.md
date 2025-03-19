@@ -1,17 +1,42 @@
-# Face Compare
+# CheckID
 
-Tener en cuenta las variables de entorno, estas son esenciales para hacer la detección de texto en la imagen al igual que guardarlas
-en un bucket de google cloud
+![logo](checkid.jpeg)
 
+CheckID is a simple API that compares two faces from different images to verify if they belong to the same person. 🚀 It analyzes an identification image and matches it against another photo for secure identity verification. 🔐 Perfect for authentication and security applications! 💡✨
+
+## Deployment options
+
+- [Your own docker image](#your-own-docker-image)
+- [Download docker image](#donwload-docker-image)
+- [Exec with python](#exec-app-with-python)
+
+### Your own Docker Image 
+
+If you want use Docker container you should use the existing `Dockerfile`
 ```bash
-export GOOGLE_APPLICATION_CREDENTIALS="your path for gcloud "
-export GOOGLE_CLOUD_PROJECT="your project ID"
+docker build . -t "CheckID:1.0" 
 ```
 
-Ademas tener en cuenta que en la sección del códgo de Python para la detección de texto
+### Donwload docker image
 
-```python
-# Start FastAPI
-app = FastAPI()
-credenciales_json = './tokens/validacionbiometrica-2c6740b82cc4.json'
+Also you can download Docker image from docker hub, for this method you will need:
+```bash
+docker pull jorgearguello/checkid:latest 
+```
+
+### Exec app with python 
+
+Finally if you need to make any modifications you should use the source code:
+```bash
+# Clone the repository
+git clone https://github.com/JorgeArguello1999/CheckID.git
+
+# Open dir
+cd CheckID
+
+# Install dependencies 
+pip install -r pyproject.toml
+
+# Run app
+python main.py
 ```
