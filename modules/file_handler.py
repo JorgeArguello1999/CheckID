@@ -7,6 +7,11 @@ updload_dir = 'uploads'
 os.makedirs(updload_dir, exist_ok=True)
 
 def save_files(data:list) -> list:
+    """
+    Save files to the system.
+    data: list - File data
+    return: list - Path to the files
+    """
     file_paths = []
     for file in data:
         file_path = os.path.join(updload_dir, str(f"{uuid.uuid4()}-{file.filename}"))
