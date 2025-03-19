@@ -23,6 +23,10 @@ Also you can download Docker image from docker hub, for this method you will nee
 ```bash
 docker pull jorgearguello/checkid:latest 
 ```
+Run
+```
+docker run -d -p 8000:8000 jorgearguello/checkid:latest
+```
 
 ### Exec app with python 
 
