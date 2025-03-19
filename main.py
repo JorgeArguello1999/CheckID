@@ -14,6 +14,7 @@ async def read_root():
         "name": "CheckID",
         "github": "https://github.com/JorgeArguello1999/CheckID.git",
         "method": "POST",
+        "file-type": "only images",
         "form": {
             "file1": "file1.png",
             "file2": "file2.png",
