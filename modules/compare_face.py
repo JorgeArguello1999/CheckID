@@ -1,10 +1,31 @@
-from face_recognition import (
-    load_image_file,
-    face_encodings, 
-    compare_faces
-)
+from face_recognition import face_encodings, compare_faces
+from PIL import Image
 
-def compare_face(image1:str, image2:str) -> bool:
+import numpy as np
+import io
+
+async def encode_image(file, mode="RGB") -> np.array:
+    """
+    Convert file to numpy array
+    file: bytes - From API
+    mode: str - Image mode
+    return: np.array - For face_recognition
+    """
+
+    try: 
+        files_bytes = await file.read()
+        image = Image.open(io.BytesIO(files_bytes))
+
+    except: # noqa
+        image = Image.open(file) 
+
+    if mode: 
+        image = image.convert(mode) 
+    
+    return face_encodings(np.array(image))[0]
+
+
+async def compare_face(image1:str, image2:str) -> bool:
     """
     Compare two faces and return True if they are the same person
     Remember to use only png images
@@ -13,19 +34,13 @@ def compare_face(image1:str, image2:str) -> bool:
     """
 
     # Load the images
-    image1 = load_image_file(image1)
-    image2 = load_image_file(image2)
-
-    # Get the face encodings
-    face_encoding1 = face_encodings(image1)[0]
-    face_encoding2 = face_encodings(image2)[0]
+    face_encoding1 = await encode_image(image1)
+    face_encoding2 = await encode_image(image2)
 
     # Compare the faces
     return compare_faces([face_encoding1], face_encoding2, tolerance=0.6)[0]
 
 if __name__ == "__main__":
-    DIR = "uploads/"
-    result = compare_face(f"{DIR}photo1.png", f"{DIR}photo1.png")
+    with open("uploads/photo1.png", "rb") as f1, open("uploads/photo1.png", "rb") as f2:
+        result = compare_face(f1, f2)
     print(result)
-
-
