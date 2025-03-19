@@ -13,12 +13,21 @@ def save_files(data:list) -> list:
     return: list - Path to the files
     """
     file_paths = []
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+    
     for file in data:
-        file_path = os.path.join(updload_dir, str(f"{uuid.uuid4()}-{file.filename}"))
-        with open(file_path, 'wb') as f:
-            shutil.copyfileobj(file.file, f)
-        file_paths.append(file_path)
+        file_extension = os.path.splitext(file.filename)[1].lower()
+        
+        if file_extension in valid_extensions:
+            file_path = os.path.join(updload_dir, f"{uuid.uuid4()}-{file.filename}")
+            with open(file_path, 'wb') as f:
+                shutil.copyfileobj(file.file, f)
+            file_paths.append(file_path)
+        else:
+            print(f"File: {file.filename} not allowed")
+    
     return file_paths
+
 
 def delete_files(file_paths: list) -> bool:
     """
