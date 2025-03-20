@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from modules import compare_face
 from modules import file_handler
 
@@ -46,8 +46,23 @@ async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(..
         result = f"error: {e}"
 
     return {
-        "status": result
+        "result": result
     }
+
+# Upload Face vs BitsMap
+@app.post('/facecheck/')
+async def face_check(file: UploadFile = File(...), data_image: str = Form):
+
+    try:
+        result = compare_face.face_vs_numpy_array(file, data_image)
+
+    except Exception as e:
+        print(str(e))
+        result = str(e)
+
+    return {
+        "result": result
+    } 
 
 if __name__ == '__main__':
     uvicorn.run(

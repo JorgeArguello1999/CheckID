@@ -14,11 +14,14 @@ def encode_image(file) -> np.array:
     face = load_image_file(file)
     return face_encodings(face)[0]
 
-def face_vs_numpy_array(image1:str, numpy_array:np.array) -> dict:
+def face_vs_numpy_array(image1:str, data:str) -> dict:
     """
     Compare photo vs numpy array 
     """
     
+    # Str to numpy array
+    numpy_array = np.array(data)
+
     # Load image
     face_encoding = encode_image(image1)
 
