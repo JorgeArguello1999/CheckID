@@ -40,6 +40,13 @@ async def read_root():
                 "distance": "0-1",
                 "is_same": "bool"
             }
+        },
+        
+        "get_binary": {
+            "form": {
+                "file": "file.png",
+            }, 
+            "answer": "binary file"
         }
     }
 
