@@ -33,10 +33,12 @@ async def read_root():
 
         "compare1face": {
             "form": {
-
+                "file": "file.png",
+                "binary": "encode_image"
             },
             "answer": {
-
+                "distance": "0-1",
+                "is_same": "bool"
             }
         }
     }
@@ -57,6 +59,21 @@ async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(..
         print(str(e))
         result = f"error: {e}"
 
+    return {
+        "result": result
+    }
+
+@app.post('/binary_compare/')
+async def binary_compare(file: UploadFile = File(...), binary: str = Form(...)): 
+    try:
+        file_path = file_handler.save_files([file])
+        result = compare_face.compare_binary(file_path[0], binary)
+        file_handler.delete_files(file_path)
+
+    except Exception as e:
+        result = str(e)
+        print(result)
+    
     return {
         "result": result
     }
