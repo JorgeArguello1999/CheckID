@@ -45,7 +45,6 @@ async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(..
         print(str(e))
         result = f"error: {e}"
 
-    print(result)
     return {
         "status": result
     }
