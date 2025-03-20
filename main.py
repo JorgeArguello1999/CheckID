@@ -54,7 +54,9 @@ async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(..
 async def face_check(file: UploadFile = File(...), data_image: str = Form):
 
     try:
-        result = compare_face.face_vs_numpy_array(file, data_image)
+        file_path = file_handler.save_files([file])
+        result = compare_face.face_vs_numpy_array(file_path[0], data_image)
+        file_handler.delete_files(file_path[0])
 
     except Exception as e:
         print(str(e))

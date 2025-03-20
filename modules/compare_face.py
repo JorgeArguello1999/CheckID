@@ -14,19 +14,28 @@ def encode_image(file) -> np.array:
     face = load_image_file(file)
     return face_encodings(face)[0]
 
+def str_to_numpy(data:str) -> np.array:
+    """
+    Transform Data Str to Numpy Array
+    """
+    data = np.fromstring(data)
+    print(data)
+    return data
+
 def face_vs_numpy_array(image1:str, data:str) -> dict:
     """
     Compare photo vs numpy array 
     """
     
     # Str to numpy array
-    numpy_array = np.array(data)
+    numpy_array = str_to_numpy(data)
 
     # Load image
     face_encoding = encode_image(image1)
 
     # Distance
     distance = face_distance([face_encoding], numpy_array)
+    print("Here...")
 
     if face_encoding is False:
         return False
