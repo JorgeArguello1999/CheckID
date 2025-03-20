@@ -14,39 +14,6 @@ def encode_image(file) -> np.array:
     face = load_image_file(file)
     return face_encodings(face)[0]
 
-def str_to_numpy(data:str) -> np.array:
-    """
-    Transform Data Str to Numpy Array
-    """
-    data = np.fromstring(data)
-    print(data)
-    return data
-
-def face_vs_numpy_array(image1:str, data:str) -> dict:
-    """
-    Compare photo vs numpy array 
-    """
-    
-    # Str to numpy array
-    numpy_array = str_to_numpy(data)
-
-    # Load image
-    face_encoding = encode_image(image1)
-
-    # Distance
-    distance = face_distance([face_encoding], numpy_array)
-    print("Here...")
-
-    if face_encoding is False:
-        return False
-    
-    is_same = bool(compare_faces([face_encoding], numpy_array, tolerance=0.6)[0])
-
-    return {
-        "is_same": is_same,
-        "distance": distance
-    }
-
 def compare_face(image1:str, image2:str) -> dict:
     """
     Compare two faces and return True if they are the same person
