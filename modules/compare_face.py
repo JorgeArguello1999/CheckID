@@ -70,15 +70,34 @@ def compare_binary(image:str, binary:str) -> dict:
         "is_same": is_same
     }
 
-if __name__ == "__main__":
-    # compare2faces
+def get_binary(image:str) -> dict:
     """
+    Get binary encode from picture
+    image: str - File path
+    """
+
+    # Load image
+    image_encode = encode_image(image)
+
+    # Encode
+    image_encode = pickle.dumps(image_encode).hex()
+
+    return str(image_encode)
+
+if __name__ == "__main__":
+    """
+    # compare2faces
     with open("uploads/photo1.png", "rb") as f1, open("uploads/photo1.png", "rb") as f2:
         result = compare_face(f1, f2)
     print(result)
-    """
 
     # compare_binary
     with open('uploads/data.txt', 'r') as data, open('uploads/photo1.png', 'rb') as photo:
         result = compare_binary(photo, data.read())
+    print(result)
+    """
+
+    # get_binary
+    with open('uploads/photo1.png', 'rb') as photo:
+        result = get_binary(photo)
     print(result)
