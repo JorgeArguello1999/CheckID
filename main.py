@@ -15,22 +15,34 @@ async def read_root():
         "github": "https://github.com/JorgeArguello1999/CheckID.git",
         "method": "POST",
         "file-type": "only images",
-        "form": {
-            "file1": "file1.png",
-            "file2": "file2.png",
+
+        "compare2faces": {
+            "form": {
+                "file1": "file1.png",
+                "file2": "file2.png",
+            },
+            "answer": {
+                "is_same": "bool",
+                "distance": "0-1",
+                "encode_faces": [
+                    "Encode first photo",
+                    "Enconde second photo"
+                ]
+            }
         },
-        "output": {
-            "is_same": "bool",
-            "distance": "0-1",
-            "encode_faces": [
-                "numpy array from the first photo",
-                "numpy array from the second photo"
-            ]
+
+        "compare1face": {
+            "form": {
+
+            },
+            "answer": {
+
+            }
         }
     }
 
 # Upload route
-@app.post('/') 
+@app.post('/compare2faces/') 
 async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(...)):
     try:
         file_paths = file_handler.save_files([file1, file2])
