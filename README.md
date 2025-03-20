@@ -4,21 +4,73 @@
 
 CheckID is a simple API that compares two faces from different images to verify if they belong to the same person. 🚀 It analyzes an identification image and matches it against another photo for secure identity verification. 🔐 Perfect for authentication and security applications! 💡✨
 
-# I/O APP
+# Features
+- Compare two images to verify facial similarity.
+- Obtain facial encoding in binary format.
+- Compare an image with a pre-existing binary.
+- Easy deployment with Docker or native execution with Python.
 
-## Input
+## Endpoints
+### 1. **Compare two faces**
+**URL:** `/compare2faces/`
 
-You must be a POST request from Web, PostMan or Curl with this form:
-```bash 
-curl \
-```
+**Method:** `POST`
 
-## Output
+**Parameters:**
+- `file1` (image) - First image to compare.
+- `file2` (image) - Second image to compare.
 
-The output will be this:
+**Response:**
 ```json
-
+{
+    "result": {
+        "is_same": true,
+        "distance": 0.25,
+        "encode_faces": [
+            "ENCODED_DATA_1",
+            "ENCODED_DATA_2"
+        ]
+    }
+}
 ```
+
+---
+### 2. **Compare an image with a binary**
+**URL:** `/binary_compare/`
+
+**Method:** `POST`
+
+**Parameters:**
+- `file` (image) - Image to compare.
+- `binary` (string) - Facial encoding in binary.
+
+**Response:**
+```json
+{
+    "result": {
+        "is_same": false,
+        "distance": 0.48
+    }
+}
+```
+
+---
+### 3. **Get binary of an image**
+**URL:** `/get_binary/`
+
+**Method:** `POST`
+
+**Parameters:**
+- `file` (image) - Image to process.
+
+**Response:**
+```json
+{
+    "result": "ENCODED_BINARY_STRING"
+}
+```
+
+---
 
 # Deployment options
 
@@ -60,3 +112,15 @@ pip install -r pyproject.toml
 # Run app
 python main.py
 ```
+
+## Contributing
+If you wish to contribute to the development of CheckID, feel free to send Pull Requests or open issues on [GitHub](https://github.com/JorgeArguello1999/CheckID.git).
+
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
+
+---
+
+🚀 **Developed by Jorge Arguello** | [GitHub](https://github.com/JorgeArguello1999/)
+
+---
