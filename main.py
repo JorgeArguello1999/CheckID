@@ -41,7 +41,7 @@ async def read_root():
         }
     }
 
-# Upload route
+# Compare 2 faces 
 @app.post('/compare2faces/') 
 async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(...)):
     try:
