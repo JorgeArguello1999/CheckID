@@ -20,7 +20,12 @@ async def read_root():
             "file2": "file2.png",
         },
         "output": {
-            "status": "bool"
+            "is_same": "bool",
+            "distance": "0-1",
+            "encode_faces": [
+                "numpy array from the first photo",
+                "numpy array from the second photo"
+            ]
         }
     }
 
@@ -37,9 +42,13 @@ async def upload_file(file1: UploadFile = File(...), file2: UploadFile = File(..
         file_handler.delete_files(file_paths)
 
     except Exception as e:
+        print(str(e))
         result = f"error: {e}"
 
-    return {"status": result}
+    print(result)
+    return {
+        "status": result
+    }
 
 if __name__ == '__main__':
     uvicorn.run(
