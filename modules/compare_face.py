@@ -3,6 +3,7 @@ from face_recognition import load_image_file
 from face_recognition import face_distance
 
 import numpy as np
+import pickle
 
 def encode_image(file) -> np.array:
     """
@@ -40,7 +41,8 @@ def compare_face(image1:str, image2:str) -> dict:
         "is_same": is_same, 
         "distance": float(distance),
         "encode_faces": [
-            str(face_encoding1), str(face_encoding2)
+            str(pickle.dumps(face_encoding1)), 
+            str(pickle.dumps(face_encoding2))
         ] 
     }
 
