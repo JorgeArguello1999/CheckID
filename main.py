@@ -18,6 +18,9 @@ async def read_root():
         "form": {
             "file1": "file1.png",
             "file2": "file2.png",
+        },
+        "output": {
+            "status": "bool"
         }
     }
 
