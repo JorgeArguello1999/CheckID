@@ -4,7 +4,6 @@ from face_recognition import face_distance
 
 import numpy as np
 import pickle
-import ast
 
 def encode_image(file) -> np.array:
     """
@@ -42,8 +41,8 @@ def compare_face(image1:str, image2:str) -> dict:
         "is_same": is_same, 
         "distance": float(distance),
         "encode_faces": [
-            str(pickle.dumps(face_encoding1)), 
-            str(pickle.dumps(face_encoding2))
+            str(pickle.dumps(face_encoding1).hex()), 
+            str(pickle.dumps(face_encoding2).hex())
         ] 
     }
 
@@ -53,8 +52,9 @@ def compare_binary(image:str, binary:str) -> dict:
     image: str - Image path
     binary: str - All binary from picture
     """
-    clean = ast.literal_eval(binary)
-    data = pickle.loads(clean)
+    binary = binary.strip("'").strip('"')
+    data = bytes.fromhex(binary)
+    data = pickle.loads(data)
 
     # Load image
     image_encode = encode_image(image)
@@ -80,6 +80,5 @@ if __name__ == "__main__":
 
     # compare_binary
     with open('uploads/data.txt', 'r') as data, open('uploads/photo1.png', 'rb') as photo:
-        print(data.read())
         result = compare_binary(photo, data.read())
     print(result)
