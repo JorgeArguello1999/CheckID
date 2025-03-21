@@ -7,6 +7,10 @@ import uvicorn
 # Start APP
 app = FastAPI()
 
+# Clean uploads dirs
+print("Cleaning directory")
+file_handler.clean_dir()
+
 # View route
 @app.get('/')
 async def read_root():

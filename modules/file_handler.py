@@ -6,6 +6,17 @@ import uuid
 updload_dir = 'uploads'
 os.makedirs(updload_dir, exist_ok=True)
 
+def clean_dir() -> None:
+    if os.path.exists(updload_dir):
+        for archivo in os.listdir(updload_dir):
+            path = os.path.join(updload_dir, archivo)
+            if os.path.isfile(path) or os.path.islink(path):
+                os.remove(path)
+            elif os.path.isdir(path):
+                shutil.rmtree(path)
+    else:
+        print("Dir didn't exist.")
+
 def save_files(data:list) -> list:
     """
     Save files to the system.
