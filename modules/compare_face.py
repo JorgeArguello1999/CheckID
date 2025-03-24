@@ -84,6 +84,28 @@ def get_binary(image:str) -> dict:
 
     return str(image_encode)
 
+def files_compares(imagen: str, hex_file: str) -> dict:
+    try:
+        with open(hex_file, 'rb') as file:
+            binary_data = file.read()
+        
+        try:
+            data = pickle.loads(bytes.fromhex(binary_data.decode('utf-8').strip("'\"")))
+        except Exception as e:
+            return {"error": "Didn't load binaries"}
+        
+        image_encode = encode_image(imagen)
+        distance = face_distance([data], image_encode)[0]
+        is_same = bool(compare_faces([data], image_encode, tolerance=0.6)[0])
+        
+        return {
+            "distance": float(distance),
+            "is_same": is_same
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
+
 if __name__ == "__main__":
     """
     # compare2faces

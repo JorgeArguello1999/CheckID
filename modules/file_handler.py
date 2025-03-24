@@ -24,7 +24,7 @@ def save_files(data:list) -> list:
     return: list - Path to the files
     """
     file_paths = []
-    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.hex']
     
     for file in data:
         file_extension = os.path.splitext(file.filename)[1].lower()

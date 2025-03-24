@@ -104,6 +104,22 @@ async def get_binary(file: UploadFile = File(...)):
         "result": result
     }
 
+@app.post('/compare_binary/')
+async def compare_binary(image: UploadFile = File(...), hex_file: UploadFile = Form(...)):
+    try:
+        paths = file_handler.save_files([image, hex_file])
+        print(paths)
+        result = compare_face.files_compares(paths[0], paths[1])
+        file_handler.delete_files(paths)
+    
+    except Exception as e:
+        result = str(e)
+        print(result)
+
+    return {
+        "result": result
+    }
+
 if __name__ == '__main__':
     uvicorn.run(
         "main:app",
