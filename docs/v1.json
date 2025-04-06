@@ -1,0 +1,39 @@
+{
+    "name": "CheckID",
+    "github": "https://github.com/JorgeArguello1999/CheckID.git",
+    "method": "POST",
+    "file-type": "only images",
+
+    "compare2faces": {
+        "form": {
+            "file1": "file1.png",
+            "file2": "file2.png"
+        },
+        "answer": {
+            "is_same": "bool",
+            "distance": "0-1",
+            "encode_faces": [
+                "Encode first photo",
+                "Enconde second photo"
+            ]
+        }
+    },
+
+    "compare1face": {
+        "form": {
+            "file": "file.png",
+            "binary": "encode_image"
+        },
+        "answer": {
+            "distance": "0-1",
+            "is_same": "bool"
+        }
+    },
+        
+    "get_binary": {
+        "form": {
+            "file": "file.png"
+        }, 
+        "answer": "binary file"
+    }
+}
