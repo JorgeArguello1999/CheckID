@@ -54,6 +54,7 @@ async def get_binary(file: UploadFile = File(...)):
     try:
         file_path = file_handler.save_files([file])
         data = compare_face.get_binary(file_path[0])
+        data = {"encode": data}
         return v2.ApiResponseHelper(True, "Get binary successful.", data)
 
     except Exception as e:

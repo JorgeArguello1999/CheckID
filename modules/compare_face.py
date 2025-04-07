@@ -70,7 +70,7 @@ def compare_binary(image:str, binary:str) -> dict:
         "is_same": is_same
     }
 
-def get_binary(image:str) -> dict:
+def get_binary(image:str) -> str:
     """
     Get binary encode from picture
     image: str - File path
