@@ -5,6 +5,8 @@ from face_recognition import face_distance
 import numpy as np
 import pickle
 
+TOLERANCE = 0.6
+
 def encode_image(file) -> np.array:
     """
     Convert file to numpy array
@@ -15,7 +17,7 @@ def encode_image(file) -> np.array:
     face = load_image_file(file)
     return face_encodings(face)[0]
 
-def compare_face(image1:str, image2:str) -> dict:
+def compare_face(image1:str, image2:str, tol:float=TOLERANCE) -> dict:
     """
     Compare two faces and return True if they are the same person
     Remember to use only png images
@@ -28,14 +30,14 @@ def compare_face(image1:str, image2:str) -> dict:
     face_encoding1 = encode_image(image1) 
     face_encoding2 = encode_image(image2)
 
-    # Distance
-    distance = face_distance([face_encoding1], face_encoding2)[0]
-
     if face_encoding1 is False or face_encoding2 is False:
         return False
 
+    # Distance
+    distance = face_distance([face_encoding1], face_encoding2)[0]
+
     # Compare the faces
-    is_same = bool(compare_faces([face_encoding1], face_encoding2, tolerance=0.6)[0]) 
+    is_same = bool(distance < tol)
 
     return {
         "is_same": is_same, 
@@ -46,7 +48,7 @@ def compare_face(image1:str, image2:str) -> dict:
         ] 
     }
 
-def compare_binary(image:str, binary:str) -> dict:
+def compare_binary(image:str, binary:str, tol:float=TOLERANCE) -> dict:
     """
     Compare the face vs binary data
     image: str - Image path
@@ -63,7 +65,7 @@ def compare_binary(image:str, binary:str) -> dict:
     distance = face_distance([data], image_encode)[0]
 
     # Compare the faces
-    is_same = bool(compare_faces([data], image_encode, tolerance=0.6)[0])
+    is_same = bool(distance < tol)
 
     return {
         "distance": distance,
@@ -84,7 +86,7 @@ def get_binary(image:str) -> str:
 
     return str(image_encode)
 
-def files_compares(imagen: str, hex_file: str) -> dict:
+def files_compares(imagen: str, hex_file: str, tol:float=TOLERANCE) -> dict:
     try:
         with open(hex_file, 'rb') as file:
             binary_data = file.read()
@@ -96,7 +98,7 @@ def files_compares(imagen: str, hex_file: str) -> dict:
         
         image_encode = encode_image(imagen)
         distance = face_distance([data], image_encode)[0]
-        is_same = bool(compare_faces([data], image_encode, tolerance=0.6)[0])
+        is_same = bool(distance < tol)
         
         return {
             "distance": float(distance),
