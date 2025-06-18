@@ -31,9 +31,20 @@ def extract_text_from_image(image_path: str) -> str:
     # Return full text annotation (all text found)
     return response.full_text_annotation.text
 
+def extract_numbers_from_text(text: str) -> list:
+    """
+    Extracts all numbers from the given text.
+    
+    :param text: Input text from which to extract numbers
+    :return: List of extracted numbers as strings
+    """
+    import re
+    return re.findall(r'\d+', text)
+
 if __name__ == "__main__":
     try:
         text = extract_text_from_image("./uploads/dni2.png")
         print("Extracted text:\n", text)
+        print(f"Extracted numbers: {extract_numbers_from_text(text)}")
     except Exception as e:
         print("Error:", e)
