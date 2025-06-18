@@ -1,5 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, Form
 from modules import compare_face, file_handler
+from modules import extract_text
 from models import v2
 
 import json
@@ -103,21 +104,29 @@ async def verify_dni(
         # Compare faces
         try: 
             comparison = compare_face.compare_face(file_paths[0], file_paths[1])
+
+            if not comparison['is_same']:
+                return v2.ApiResponseHelper(False, "Faces do not match. Please ensure both images are valid.")
+
+            # Verify if the face matches the DNI
+            status = False
+            try:
+                text = extract_text.extract_text_from_image(file_paths[1])
+                numbers = extract_text.extract_numbers_from_text(text)
+                if dni_number not in numbers:
+                    return v2.ApiResponseHelper(False, "DNI number does not match the document.")
+                
+                return v2.ApiResponseHelper(True, "DNI verified successfully.", {
+                    "face_comparison": comparison,
+                    "dni_number": dni_number
+                })
+
+            except Exception as e:
+                return v2.ApiResponseHelper(False, f"Error verifying DNI: {str(e)}")
+
         except Exception as e:
             return v2.ApiResponseHelper(False, f"Face comparison failed. Ensure both images are valid. {e}")
 
-        # Verify if the face matches the DNI
-        try:
-            pass
-        except Exception as e:
-            return v2.ApiResponseHelper(False, f"Error verifying DNI: {str(e)}")
-
-        data = {
-            "faces": comparison,
-            "dni_number": dni_number
-        }
-
-        return v2.ApiResponseHelper(True, "Face comparison completed.", data)
 
     except Exception as e:
         return v2.ApiResponseHelper(False, f"Error: {str(e)}")

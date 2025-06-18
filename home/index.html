@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de DNI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .file-input-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1em;
+            width: 100%;
+            text-align: center;
+        }
+
+        .file-input-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .image-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .image-name {
+            margin-top: 8px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .dni-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .dni-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .verify-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .verify-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .verify-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Verificador de DNI</h1>
+            <p>Sube las imágenes y verifica la identidad</p>
+        </div>
+
+        <form id="verifyForm">
+            <div class="form-group">
+                <label for="faceImage">
+                    Imagen del Rostro <span class="required">*</span>
+                </label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="faceImage" class="file-input" accept="image/*" required>
+                    <label for="faceImage" class="file-input-button">
+                        📸 Seleccionar imagen del rostro
+                    </label>
+                </div>
+                <div id="facePreview" class="image-preview"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="dniImage">
+                    Imagen del DNI <span class="required">*</span>
+                </label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="dniImage" class="file-input" accept="image/*" required>
+                    <label for="dniImage" class="file-input-button">
+                        🆔 Seleccionar imagen del DNI
+                    </label>
+                </div>
+                <div id="dniPreview" class="image-preview"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="dniNumber">
+                    Número de DNI <span class="required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="dniNumber" 
+                    class="dni-input" 
+                    placeholder="Ingrese los 10 dígitos del DNI"
+                    pattern="[0-9]{10}"
+                    maxlength="10"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="verify-button" id="verifyBtn">
+                🔍 Verificar DNI
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Verificando información...</p>
+        </div>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        // Configuración de la API - CAMBIAR POR TU URL
+        const API_BASE_URL = 'http://127.0.0.1:8000/v2'; // Cambia esto por tu URL de API
+
+        // Referencias a elementos del DOM
+        const faceImageInput = document.getElementById('faceImage');
+        const dniImageInput = document.getElementById('dniImage');
+        const dniNumberInput = document.getElementById('dniNumber');
+        const verifyForm = document.getElementById('verifyForm');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+
+        // Función para mostrar vista previa de imagen
+        function showImagePreview(input, previewId) {
+            const file = input.files[0];
+            const preview = document.getElementById(previewId);
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <div class="image-name">${file.name}</div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        // Event listeners para vista previa de imágenes
+        faceImageInput.addEventListener('change', function() {
+            showImagePreview(this, 'facePreview');
+        });
+
+        dniImageInput.addEventListener('change', function() {
+            showImagePreview(this, 'dniPreview');
+        });
+
+        // Validación en tiempo real del número de DNI
+        dniNumberInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+        });
+
+        // Función para mostrar resultado
+        function showResult(isSuccess, message, data = null) {
+            result.style.display = 'block';
+            result.className = `result ${isSuccess ? 'success' : 'error'}`;
+            
+            if (isSuccess && data) {
+                result.innerHTML = `
+                    <div style="margin-bottom: 10px;">✅ ${message}</div>
+                    <div style="font-size: 0.9em; font-weight: normal;">
+                        <strong>Similitud:</strong> ${(data.comparison.confidence * 100).toFixed(1)}%<br>
+                        <strong>DNI verificado:</strong> ${data.dni_number}
+                    </div>
+                `;
+            } else {
+                result.innerHTML = `❌ ${message}`;
+            }
+        }
+
+        // Función para verificar DNI
+        async function verifyDNI(faceFile, dniFile, dniNumber) {
+            const formData = new FormData();
+            formData.append('face_image', faceFile);
+            formData.append('dni_image', dniFile);
+            formData.append('dni_number', dniNumber);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/verify_dni/`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error en la verificación:', error);
+                throw error;
+            }
+        }
+
+        // Manejo del envío del formulario
+        verifyForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Validaciones
+            const faceFile = faceImageInput.files[0];
+            const dniFile = dniImageInput.files[0];
+            const dniNumber = dniNumberInput.value.trim();
+
+            if (!faceFile) {
+                showResult(false, 'Por favor selecciona una imagen del rostro.');
+                return;
+            }
+
+            if (!dniFile) {
+                showResult(false, 'Por favor selecciona una imagen del DNI.');
+                return;
+            }
+
+            if (!dniNumber || dniNumber.length !== 10) {
+                showResult(false, 'El número de DNI debe tener exactamente 10 dígitos.');
+                return;
+            }
+
+            // Mostrar loading
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            verifyBtn.disabled = true;
+
+            try {
+                const response = await verifyDNI(faceFile, dniFile, dniNumber);
+                
+                if (response.success) {
+                    showResult(true, response.message, response.data);
+                } else {
+                    showResult(false, response.message);
+                }
+            } catch (error) {
+                showResult(false, 'Error de conexión. Verifica que la API esté funcionando.');
+            } finally {
+                loading.style.display = 'none';
+                verifyBtn.disabled = false;
+            }
+        });
+
+        // Actualizar texto del botón cuando se seleccionan archivos
+        function updateButtonText() {
+            const faceFile = faceImageInput.files[0];
+            const dniFile = dniImageInput.files[0];
+            
+            document.querySelector('label[for="faceImage"]').textContent = 
+                faceFile ? `✅ ${faceFile.name}` : '📸 Seleccionar imagen del rostro';
+                
+            document.querySelector('label[for="dniImage"]').textContent = 
+                dniFile ? `✅ ${dniFile.name}` : '🆔 Seleccionar imagen del DNI';
+        }
+
+        faceImageInput.addEventListener('change', updateButtonText);
+        dniImageInput.addEventListener('change', updateButtonText);
+    </script>
+</body>
+</html>
