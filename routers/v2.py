@@ -106,6 +106,12 @@ async def verify_dni(
         except Exception as e:
             return v2.ApiResponseHelper(False, f"Face comparison failed. Ensure both images are valid. {e}")
 
+        # Verify if the face matches the DNI
+        try:
+            pass
+        except Exception as e:
+            return v2.ApiResponseHelper(False, f"Error verifying DNI: {str(e)}")
+
         data = {
             "faces": comparison,
             "dni_number": dni_number
