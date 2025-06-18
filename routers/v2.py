@@ -87,34 +87,38 @@ async def verify_dni(
 ):
     """
     Receives face and DNI images along with a DNI number.
-    Validates inputs and delegates the verification process.
+    Validates inputs and compares faces.
+    """
+    file_paths = []
 
+    try: 
+        if len(dni_number) != 10 or not dni_number.isdigit():
+            return v2.ApiResponseHelper(False, "DNI number must be exactly 10 numeric digits")
 
-    try:
-        # Basic input validation
-        if not dni_check.validate_dni_format(dni_number):
-            raise ValueError("DNI number must be exactly 10 numeric digits")
+        # Save images once
+        file_paths = file_handler.save_files([face_image, dni_image])
+        if len(file_paths) != 2:
+            raise ValueError("Failed to process uploaded files.")
 
-        allowed_types = {'image/jpeg', 'image/jpg', 'image/png', 'image/webp'}
+        # Compare faces
+        try: 
+            comparison = compare_face.compare_face(file_paths[0], file_paths[1])
+        except Exception as e:
+            return v2.ApiResponseHelper(False, f"Face comparison failed. Ensure both images are valid. {e}")
 
-        if face_image.content_type not in allowed_types:
-            raise ValueError("Face image must be JPEG, PNG or WebP")
+        data = {
+            "faces": comparison,
+            "dni_number": dni_number
+        }
 
-        if dni_image.content_type not in allowed_types:
-            raise ValueError("DNI image must be JPEG, PNG or WebP")
-
-        # Delegate to the verification service
-        verification_result = await dni_check.run_verification(
-            face_image=face_image,
-            dni_image=dni_image,
-            dni_number=dni_number
-        )
-
-        return v2.ApiResponseHelper(True, verification_result["message"], verification_result["data"])
-
-    except ValueError as ve:
-        return v2.ApiResponseHelper(False, str(ve))
+        return v2.ApiResponseHelper(True, "Face comparison completed.", data)
 
     except Exception as e:
-        return v2.ApiResponseHelper(False, f"Internal server error: {str(e)}")
-    """
+        return v2.ApiResponseHelper(False, f"Error: {str(e)}")
+
+    finally:
+        if file_paths:
+            try:
+                file_handler.delete_files(file_paths)
+            except Exception as cleanup_err:
+                print(f"Cleanup error: {cleanup_err}")
