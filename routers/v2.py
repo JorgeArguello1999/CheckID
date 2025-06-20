@@ -131,10 +131,10 @@ async def verify_dni(
             message = "DNI verified successfully."
 
         return v2.ApiResponseHelper(True, message, {
-                    "face_comparison": {"is_same": is_same, "distance": distance},
-                    "dni_number": dni_number,
-                    "dni_status": status
-                })
+            "face_comparison": {"is_same": is_same, "distance": distance},
+            "dni_number": dni_number,
+            "dni_status": status
+        })
 
 
     except Exception as e:
