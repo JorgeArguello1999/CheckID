@@ -50,6 +50,21 @@
         "is_same": "bool (True if the image and the hex file represent the same person)",
         "distance": "float (0.0 to 1.0, lower values indicate higher similarity)"
       }
+    },
+
+    "verify_dni": {
+      "form":{
+        "face_image": "file.png (face image)",
+        "dni_image": "file.png (DNI image)",
+        "dni_number": "string (DNI number, e.g., '12345678A')"
+      },
+      "description": "Verifies if the face in the provided image matches the face on the DNI image and checks if the DNI number is valid.",
+      "answer": {
+        "is_same": "bool (True if the face matches the DNI image and the DNI number is valid)",
+        "dni_number": "string (the provided DNI number)",
+        "dni_valid": "bool (True if the DNI number is valid)",
+        "distance": "float (0.0 to 1.0, lower values mean higher similarity between faces)"
+      }
     }
 }
   
