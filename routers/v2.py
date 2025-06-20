@@ -103,7 +103,7 @@ async def verify_dni(
 
         # Compare faces
         try: 
-            comparison = compare_face.compare_face(file_paths[0], file_paths[1])
+            comparison = compare_face.compare_face(file_paths[0], file_paths[1], only_result=True)
 
             if not comparison['is_same']:
                 return v2.ApiResponseHelper(False, "Faces do not match. Please ensure both images are valid.")
