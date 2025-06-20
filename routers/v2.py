@@ -114,11 +114,16 @@ async def verify_dni(
                 text = extract_text.extract_text_from_image(file_paths[1])
                 numbers = extract_text.extract_numbers_from_text(text)
                 if dni_number not in numbers:
-                    return v2.ApiResponseHelper(False, "DNI number does not match the document.")
+                    return v2.ApiResponseHelper(True, "Face matches, but DNI number does not match the document.", {
+                        "face_comparison": comparison,
+                        "dni_number": dni_number,
+                        "dni_status": False
+                    })
                 
                 return v2.ApiResponseHelper(True, "DNI verified successfully.", {
                     "face_comparison": comparison,
-                    "dni_number": dni_number
+                    "dni_number": dni_number,
+                    "dni_status": True
                 })
 
             except Exception as e:
