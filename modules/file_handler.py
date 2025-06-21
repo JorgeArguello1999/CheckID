@@ -48,6 +48,8 @@ def convert_images_png(images_paths:list) -> list:
 
         except Exception as e:
             print(f"Error: file: {image}, {e}")
+        
+        return converted_paths
                 
 def save_files(data:list) -> list:
     """
