@@ -1,3 +1,5 @@
+from PIL import Image
+
 import os 
 import shutil 
 import uuid
@@ -17,6 +19,36 @@ def clean_dir() -> None:
     else:
         print("Dir didn't exist.")
 
+# Convert images to .png 
+def convert_images_png(images_paths:list) -> list:
+    """
+    Convert images from .jpeg, .webp and other to .png
+    images: list of images where are saved
+    """
+    converted_paths = []
+    
+    for image in images_paths:
+        first, ext = os.path.splitext(image)
+
+        if ext == '.hex':
+            converted_paths.append(image)
+            continue
+
+        try: 
+            with Image.open(image) as img:
+                img = img.convert("RGBA")
+                # new_path = f"{os.path.splitexte(image)[0]}.png"
+                new_path = f"{first}.png"
+                img.save(new_path, format="PNG")
+                converted_paths.append(new_path)
+            
+            # Delete images if not .png
+            if ext != ".png":
+                os.remove(image)
+
+        except Exception as e:
+            print(f"Error: file: {image}, {e}")
+                
 def save_files(data:list) -> list:
     """
     Save files to the system.
