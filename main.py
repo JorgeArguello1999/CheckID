@@ -17,7 +17,7 @@ app = FastAPI()
 origin = [
     "http://localhost:8000",
     "http://127.0.1:8000",
-    "*",
+    "*", # Fix for CORS issues
 ]
 app.add_middleware(
     CORSMiddleware,
