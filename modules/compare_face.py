@@ -17,7 +17,7 @@ def encode_image(file) -> np.array:
     face = load_image_file(file)
     return face_encodings(face)[0]
 
-def compare_face(image1:str, image2:str, tol:float=TOLERANCE) -> dict:
+def compare_face(image1:str, image2:str, tol:float=TOLERANCE, only_result:bool=False) -> dict:
     """
     Compare two faces and return True if they are the same person
     Remember to use only png images
@@ -38,6 +38,12 @@ def compare_face(image1:str, image2:str, tol:float=TOLERANCE) -> dict:
 
     # Compare the faces
     is_same = bool(distance < tol)
+
+    if only_result:
+        return {
+            "is_same": is_same, 
+            "distance": float(distance)
+        }
 
     return {
         "is_same": is_same, 

@@ -102,30 +102,39 @@ async def verify_dni(
             raise ValueError("Failed to process uploaded files.")
 
         # Compare faces
+        is_same = False
+        distance = 0.0
         try: 
-            comparison = compare_face.compare_face(file_paths[0], file_paths[1])
-
-            if not comparison['is_same']:
-                return v2.ApiResponseHelper(False, "Faces do not match. Please ensure both images are valid.")
-
-            # Verify if the face matches the DNI
-            status = False
-            try:
-                text = extract_text.extract_text_from_image(file_paths[1])
-                numbers = extract_text.extract_numbers_from_text(text)
-                if dni_number not in numbers:
-                    return v2.ApiResponseHelper(False, "DNI number does not match the document.")
-                
-                return v2.ApiResponseHelper(True, "DNI verified successfully.", {
-                    "face_comparison": comparison,
-                    "dni_number": dni_number
-                })
-
-            except Exception as e:
-                return v2.ApiResponseHelper(False, f"Error verifying DNI: {str(e)}")
+            comparison = compare_face.compare_face(
+                file_paths[0], file_paths[1], only_result=True
+            )
+            is_same = comparison['is_same']
+            distance = comparison['distance']
 
         except Exception as e:
             return v2.ApiResponseHelper(False, f"Face comparison failed. Ensure both images are valid. {e}")
+
+        # Verify if the face matches the DNI
+        status = False
+        try:
+            text = extract_text.extract_text_from_image(file_paths[1])
+            numbers = extract_text.extract_numbers_from_text(text)
+            if dni_number in numbers:
+                stauts = True 
+
+        except Exception as e:
+            return v2.ApiResponseHelper(False, f"Error verifying DNI: {str(e)}")
+
+        # Message 
+        message = "DNI failed verification" 
+        if is_same and status:
+            message = "DNI verified successfully."
+
+        return v2.ApiResponseHelper(True, message, {
+            "face_comparison": {"is_same": is_same, "distance": distance},
+            "dni_number": dni_number,
+            "dni_status": status
+        })
 
 
     except Exception as e:

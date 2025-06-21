@@ -60,10 +60,12 @@
       },
       "description": "Verifies if the face in the provided image matches the face on the DNI image and checks if the DNI number is valid.",
       "answer": {
-        "is_same": "bool (True if the face matches the DNI image and the DNI number is valid)",
+        "face_comparison": {
+          "is_same": "bool (True if the face matches the DNI image)",
+          "distance": "float (0.0 to 1.0, lower values mean higher similarity between faces)"
+        },
         "dni_number": "string (the provided DNI number)",
-        "dni_valid": "bool (True if the DNI number is valid)",
-        "distance": "float (0.0 to 1.0, lower values mean higher similarity between faces)"
+        "dni_valid": "bool (True if the DNI number is valid)"
       }
     }
 }
