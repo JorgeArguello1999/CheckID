@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ExifTags
 
 import os 
 import shutil 
@@ -20,37 +20,45 @@ def clean_dir() -> None:
         print("Dir didn't exist.")
 
 # Convert images to .png 
-def convert_images_png(images_paths:list) -> list:
+def convert_image_to_png(image_path: str) -> str:
     """
-    Convert images from .jpeg, .webp and other to .png
-    images: list of images where are saved
+    Convierte una imagen a .png si no lo es. Corrige la orientación usando EXIF si es necesario.
+    Retorna la ruta de la imagen final (original o convertida).
     """
-    converted_paths = []
-    
-    for image in images_paths:
-        first, ext = os.path.splitext(image)
+    _, ext = os.path.splitext(image_path)
+    ext = ext.lower()
 
-        if ext == '.hex':
-            converted_paths.append(image)
-            continue
+    if ext in ['.png', '.hex']:
+        return image_path
 
-        try: 
-            with Image.open(image) as img:
-                img = img.convert("RGBA")
-                # new_path = f"{os.path.splitexte(image)[0]}.png"
-                new_path = f"{first}.png"
-                img.save(new_path, format="PNG")
-                converted_paths.append(new_path)
-            
-            # Delete images if not .png
-            if ext != ".png":
-                os.remove(image)
+    try:
+        with Image.open(image_path) as img:
+            try:
+                exif = img._getexif()
+                if exif:
+                    orientation_key = [k for k, v in ExifTags.TAGS.items() if v == 'Orientation']
+                    if orientation_key:
+                        orientation = exif.get(orientation_key[0])
+                        if orientation == 3:
+                            img = img.rotate(180, expand=True)
+                        elif orientation == 6:
+                            img = img.rotate(270, expand=True)
+                        elif orientation == 8:
+                            img = img.rotate(90, expand=True)
+            except Exception as exif_error:
+                print(f"Warning: didn't read EXIF code: {exif_error}")
 
-        except Exception as e:
-            print(f"Error: file: {image}, {e}")
-        
-        return converted_paths
-                
+            img = img.convert("RGBA")
+            new_path = f"{os.path.splitext(image_path)[0]}.png"
+            img.save(new_path, format="PNG")
+
+        os.remove(image_path)  
+        return new_path
+
+    except Exception as e:
+        print(f"Error, don't convert {image_path}: {e}")
+        return image_path
+
 def save_files(data:list) -> list:
     """
     Save files to the system.
@@ -67,12 +75,15 @@ def save_files(data:list) -> list:
             file_path = os.path.join(updload_dir, f"{uuid.uuid4()}-{file.filename}")
             with open(file_path, 'wb') as f:
                 shutil.copyfileobj(file.file, f)
-            file_paths.append(file_path)
+
+            # Convert if necesary
+            final_path = convert_image_to_png(file_path)
+            file_paths.append(final_path)
+
         else:
             print(f"File: {file.filename} not allowed")
     
     return file_paths
-
 
 def delete_files(file_paths: list) -> bool:
     """
