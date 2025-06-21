@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheckID v2 - Face Recognition API</title>
+    <link rel="icon" href="https://github.com/JorgeArguello1999/CheckID/blob/main/checkid.jpeg?raw=true" type="image/jpeg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .api-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .api-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .api-card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .api-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input[type="file"],
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .file-preview-item {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+            background: #f9f9f9;
+        }
+
+        .file-preview-item img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 6px;
+        }
+
+        .api-info {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        .api-info h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .api-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .api-info li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .api-info li:last-child {
+            border-bottom: none;
+        }
+
+        .endpoint-url {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .api-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .api-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CheckID v2</h1>
+            <p>Face Recognition API Testing Interface</p>
+            <img src="https://github.com/JorgeArguello1999/CheckID/blob/main/checkid.jpeg?raw=true" alt="Logo" style="width: 150px; border-radius: 50%; margin-top: 20px;">
+        </div>
+
+        <div class="api-info">
+            <h2>API Information</h2>
+            <p><strong>Base URL:</strong> <span id="baseUrl">http://localhost:8000/v2</span></p>
+            <p><strong>GitHub:</strong> <a href="https://github.com/JorgeArguello1999/CheckID.git" target="_blank">CheckID Repository</a></p>
+            <p><strong>Accepted File Types:</strong> Image files (.png, .jpg, .jpeg)</p>
+            
+            <div class="form-group">
+                <label for="apiBaseUrl">API Base URL:</label>
+                <input type="text" id="apiBaseUrl" value="http://localhost:8000/v2" placeholder="Enter your API base URL">
+            </div>
+        </div>
+
+        <div class="api-grid">
+            <!-- Compare 2 Faces -->
+            <div class="api-card">
+                <h2>Compare 2 Faces</h2>
+                <div class="endpoint-url">POST /compare2faces/</div>
+                <p>Compare two face images to determine if they belong to the same person.</p>
+                
+                <form id="compare2facesForm">
+                    <div class="form-group">
+                        <label for="file1">First Face Image:</label>
+                        <input type="file" id="file1" name="file1" accept="image/*" required>
+                        <div class="file-preview" id="preview1"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="file2">Second Face Image:</label>
+                        <input type="file" id="file2" name="file2" accept="image/*" required>
+                        <div class="file-preview" id="preview2"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Compare Faces</button>
+                </form>
+                
+                <div class="loading" id="loading1">
+                    <div class="spinner"></div>
+                    <p>Comparing faces...</p>
+                </div>
+                
+                <div class="result" id="result1"></div>
+            </div>
+
+            <!-- Binary Compare -->
+            <div class="api-card">
+                <h2>Binary Compare</h2>
+                <div class="endpoint-url">POST /binary_compare/</div>
+                <p>Compare a face image with a hexadecimal string encoding of another face.</p>
+                
+                <form id="binaryCompareForm">
+                    <div class="form-group">
+                        <label for="binaryFile">Face Image:</label>
+                        <input type="file" id="binaryFile" name="file" accept="image/*" required>
+                        <div class="file-preview" id="previewBinary"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="binaryString">Binary String (Hex):</label>
+                        <textarea id="binaryString" name="binary" placeholder="Enter hexadecimal encoding..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn">Compare with Binary</button>
+                </form>
+                
+                <div class="loading" id="loading2">
+                    <div class="spinner"></div>
+                    <p>Comparing with binary...</p>
+                </div>
+                
+                <div class="result" id="result2"></div>
+            </div>
+
+            <!-- Get Binary -->
+            <div class="api-card">
+                <h2>Get Binary Encoding</h2>
+                <div class="endpoint-url">POST /get_binary/</div>
+                <p>Generate a binary (hexadecimal) encoding of a face image for storage and later comparison.</p>
+                
+                <form id="getBinaryForm">
+                    <div class="form-group">
+                        <label for="getBinaryFile">Face Image:</label>
+                        <input type="file" id="getBinaryFile" name="file" accept="image/*" required>
+                        <div class="file-preview" id="previewGetBinary"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Get Binary Encoding</button>
+                </form>
+                
+                <div class="loading" id="loading3">
+                    <div class="spinner"></div>
+                    <p>Generating binary encoding...</p>
+                </div>
+                
+                <div class="result" id="result3"></div>
+            </div>
+
+            <!-- Compare Binary Files -->
+            <div class="api-card">
+                <h2>Compare Binary Files</h2>
+                <div class="endpoint-url">POST /compare_binary/</div>
+                <p>Compare a face image with a hexadecimal file containing facial encoding.</p>
+                
+                <form id="compareBinaryFilesForm">
+                    <div class="form-group">
+                        <label for="imageFile">Face Image:</label>
+                        <input type="file" id="imageFile" name="image" accept="image/*" required>
+                        <div class="file-preview" id="previewImageFile"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hexFile">Hex File:</label>
+                        <input type="file" id="hexFile" name="hex_file" accept=".hex,.txt" required>
+                        <div class="file-preview" id="previewHexFile"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Compare Files</button>
+                </form>
+                
+                <div class="loading" id="loading4">
+                    <div class="spinner"></div>
+                    <p>Comparing files...</p>
+                </div>
+                
+                <div class="result" id="result4"></div>
+            </div>
+
+            <!-- Verify DNI -->
+            <div class="api-card">
+                <h2>Verify DNI</h2>
+                <div class="endpoint-url">POST /verify_dni/</div>
+                <p>Verify if a face matches the DNI image and validate the DNI number.</p>
+                
+                <form id="verifyDniForm">
+                    <div class="form-group">
+                        <label for="faceImage">Face Image:</label>
+                        <input type="file" id="faceImage" name="face_image" accept="image/*" required>
+                        <div class="file-preview" id="previewFaceImage"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dniImage">DNI Image:</label>
+                        <input type="file" id="dniImage" name="dni_image" accept="image/*" required>
+                        <div class="file-preview" id="previewDniImage"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dniNumber">DNI Number (10 digits):</label>
+                        <input type="text" id="dniNumber" name="dni_number" placeholder="1234567890" pattern="[0-9]{10}" maxlength="10" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Verify DNI</button>
+                </form>
+                
+                <div class="loading" id="loading5">
+                    <div class="spinner"></div>
+                    <p>Verifying DNI...</p>
+                </div>
+                
+                <div class="result" id="result5"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global API base URL
+        let API_BASE_URL = 'http://localhost:8000/v2';
+
+        // Update API base URL
+        document.getElementById('apiBaseUrl').addEventListener('change', function() {
+            API_BASE_URL = this.value.replace(/\/$/, ''); // Remove trailing slash
+            document.getElementById('baseUrl').textContent = API_BASE_URL;
+        });
+
+        // File preview functionality
+        function setupFilePreview(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            
+            input.addEventListener('change', function() {
+                preview.innerHTML = '';
+                
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'file-preview-item';
+                    
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.onload = function() {
+                            URL.revokeObjectURL(this.src);
+                        };
+                        previewItem.appendChild(img);
+                    } else {
+                        previewItem.textContent = file.name;
+                    }
+                    
+                    preview.appendChild(previewItem);
+                }
+            });
+        }
+
+        // Setup file previews
+        setupFilePreview('file1', 'preview1');
+        setupFilePreview('file2', 'preview2');
+        setupFilePreview('binaryFile', 'previewBinary');
+        setupFilePreview('getBinaryFile', 'previewGetBinary');
+        setupFilePreview('imageFile', 'previewImageFile');
+        setupFilePreview('hexFile', 'previewHexFile');
+        setupFilePreview('faceImage', 'previewFaceImage');
+        setupFilePreview('dniImage', 'previewDniImage');
+
+        // Generic API call function
+        async function makeAPICall(endpoint, formData, loadingElement, resultElement) {
+            const loading = document.getElementById(loadingElement);
+            const result = document.getElementById(resultElement);
+            
+            loading.classList.add('show');
+            result.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                result.className = `result ${data.success ? 'success' : 'error'}`;
+                result.textContent = JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        // Compare 2 Faces
+        document.getElementById('compare2facesForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file1', document.getElementById('file1').files[0]);
+            formData.append('file2', document.getElementById('file2').files[0]);
+            
+            await makeAPICall('/compare2faces/', formData, 'loading1', 'result1');
+        });
+
+        // Binary Compare
+        document.getElementById('binaryCompareForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file', document.getElementById('binaryFile').files[0]);
+            formData.append('binary', document.getElementById('binaryString').value);
+            
+            await makeAPICall('/binary_compare/', formData, 'loading2', 'result2');
+        });
+
+        // Get Binary
+        document.getElementById('getBinaryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file', document.getElementById('getBinaryFile').files[0]);
+            
+            await makeAPICall('/get_binary/', formData, 'loading3', 'result3');
+        });
+
+        // Compare Binary Files
+        document.getElementById('compareBinaryFilesForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('image', document.getElementById('imageFile').files[0]);
+            formData.append('hex_file', document.getElementById('hexFile').files[0]);
+            
+            await makeAPICall('/compare_binary/', formData, 'loading4', 'result4');
+        });
+
+        // Verify DNI
+        document.getElementById('verifyDniForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const dniNumber = document.getElementById('dniNumber').value;
+            
+            // Validate DNI number
+            if (!/^\d{10}$/.test(dniNumber)) {
+                const result = document.getElementById('result5');
+                result.className = 'result error';
+                result.textContent = 'DNI number must be exactly 10 numeric digits';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('face_image', document.getElementById('faceImage').files[0]);
+            formData.append('dni_image', document.getElementById('dniImage').files[0]);
+            formData.append('dni_number', dniNumber);
+            
+            await makeAPICall('/verify_dni/', formData, 'loading5', 'result5');
+        });
+
+        // DNI number input validation
+        document.getElementById('dniNumber').addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').substring(0, 10);
+        });
+    </script>
+</body>
+</html>
