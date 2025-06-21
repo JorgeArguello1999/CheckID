@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CheckID v2 - Face Recognition API</title>
+    <link rel="icon" href="https://github.com/JorgeArguello1999/CheckID/blob/main/checkid.jpeg?raw=true" type="image/jpeg">
     <style>
         * {
             margin: 0;
@@ -261,17 +262,18 @@
         <div class="header">
             <h1>CheckID v2</h1>
             <p>Face Recognition API Testing Interface</p>
+            <img src="https://github.com/JorgeArguello1999/CheckID/blob/main/checkid.jpeg?raw=true" alt="Logo" style="width: 150px; border-radius: 50%; margin-top: 20px;">
         </div>
 
         <div class="api-info">
             <h2>API Information</h2>
-            <p><strong>Base URL:</strong> <span id="baseUrl">http://localhost:8000</span></p>
+            <p><strong>Base URL:</strong> <span id="baseUrl">http://localhost:8000/v2</span></p>
             <p><strong>GitHub:</strong> <a href="https://github.com/JorgeArguello1999/CheckID.git" target="_blank">CheckID Repository</a></p>
             <p><strong>Accepted File Types:</strong> Image files (.png, .jpg, .jpeg)</p>
             
             <div class="form-group">
                 <label for="apiBaseUrl">API Base URL:</label>
-                <input type="text" id="apiBaseUrl" value="http://localhost:8000" placeholder="Enter your API base URL">
+                <input type="text" id="apiBaseUrl" value="http://localhost:8000/v2" placeholder="Enter your API base URL">
             </div>
         </div>
 
@@ -428,7 +430,7 @@
 
     <script>
         // Global API base URL
-        let API_BASE_URL = 'http://localhost:8000';
+        let API_BASE_URL = 'http://localhost:8000/v2';
 
         // Update API base URL
         document.getElementById('apiBaseUrl').addEventListener('change', function() {
