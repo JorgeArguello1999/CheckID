@@ -8,8 +8,24 @@ from routers.home import router as home_router
 
 from modules import file_handler
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # Start APP
 app = FastAPI()
+
+# Middleware
+origin = [
+    "http://localhost:8000",
+    "http://127.0.1:8000",
+    "*",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origin,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Clean uploads dirs 
 print("Cleaning directory")
