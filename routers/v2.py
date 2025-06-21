@@ -120,7 +120,7 @@ async def verify_dni(
             text = extract_text.extract_text_from_image(file_paths[1])
             numbers = extract_text.extract_numbers_from_text(text)
             if dni_number in numbers:
-                stauts = True 
+                status = True 
 
         except Exception as e:
             return v2.ApiResponseHelper(False, f"Error verifying DNI: {str(e)}")
